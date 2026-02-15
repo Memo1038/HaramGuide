@@ -1,164 +1,41 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مرشد الحرم الذكي</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+function startLiveTracking() {
+    navigator.geolocation.watchPosition(
+    (pos) => {
 
-    <style>
-        :root { --primary: #1b5e20; --accent: #c69c6d; --bg: #f8f9fa; }
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; height: 100vh; background: var(--bg); overflow: hidden; }
-        
-        /* شاشة البداية */
-        #welcome-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 9999; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; text-align: center; padding: 30px; box-sizing: border-box;
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const uPos = [lat, lng];
+
+        if (!userMarker) {
+            userMarker = L.circleMarker(uPos, {
+                radius: 9,
+                color: 'white',
+                weight: 3,
+                fillOpacity: 1,
+                fillColor: '#007aff'
+            }).addTo(map);
+        } else {
+            userMarker.setLatLng(uPos);
         }
 
-        .main-btn {
-            background: var(--primary); color: white; border: none; padding: 18px 45px;
-            border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 10px 25px rgba(27, 94, 32, 0.3); transition: 0.3s;
-        }
+        map.setView(uPos, 19);
 
-        /* رسالة مساعدة لمستخدمي سافاري */
-        #safari-alert {
-            display: none; background: #fff3cd; color: #856404; padding: 15px;
-            border-radius: 12px; margin-top: 20px; font-size: 14px; border: 1px solid #ffeeba;
-        }
-
-        /* الخريطة والواجهة */
-        #map { height: 100vh; width: 100%; z-index: 1; }
-        
-        .top-bar {
-            position: absolute; top: 15px; left: 10px; right: 10px; z-index: 1000;
-            background: white; padding: 12px 20px; border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px;
-        }
-        .pulse { height: 10px; width: 10px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 0 rgba(46, 204, 113, 0.4); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); } }
-
-        .bottom-panel {
-            position: absolute; bottom: 25px; left: 10px; right: 10px; z-index: 1000;
-        }
-        .search-results { background: white; border-radius: 12px; max-height: 150px; overflow-y: auto; display: none; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .res-item { padding: 14px; border-bottom: 1px solid #eee; font-size: 15px; }
-        
-        .search-input { width: 100%; padding: 16px; border-radius: 15px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.15); font-size: 16px; margin-bottom: 10px; outline: none; box-sizing: border-box; }
-        .stats-box { background: var(--primary); color: white; padding: 15px; border-radius: 18px; display: flex; justify-content: space-around; }
-        .stat-item b { display: block; font-size: 19px; }
-        .stat-item span { font-size: 11px; opacity: 0.9; }
-    </style>
-</head>
-<body>
-
-<div id="welcome-screen">
-    <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" width="100" style="margin-bottom: 20px;">
-    <h2 style="color: var(--primary); margin: 0;">مساعد الحرم الذكي</h2>
-    <p style="color: #666; font-size: 14px; margin: 15px 0 25px;">لمعرفة مكانك وتوجيهك للأبواب، نحتاج الوصول لموقعك</p>
-    <button class="main-btn" onclick="requestLocation()">ابدأ مشاركة الموقع</button>
-    
-    <div id="safari-alert">
-        للآيفون: اضغط على <b>AA</b> بجانب الرابط ثم <b>إعدادات الموقع</b> واجعل الوصول <b>سماح</b>.
-    </div>
-</div>
-
-<div class="top-bar">
-    <div class="pulse"></div>
-    <span id="currentPlaceName" style="font-weight: bold; font-size: 14px;">جاري تحديد موقعك...</span>
-</div>
-
-<div id="map"></div>
-
-<div class="bottom-panel">
-    <div id="searchResults" class="search-results"></div>
-    <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن وجهتك (باب، زمزم...)" oninput="search()">
-    <div class="stats-box">
-        <div class="stat-item"><b id="dVal">0</b><span>متر للهدف</span></div>
-        <div class="stat-item"><b id="sVal">0</b><span>خطوة</span></div>
-    </div>
-</div>
-
-<script>
-    const destinations = [
-        { name: "باب الملك فهد", lat: 21.4214, lng: 39.8235 },
-        { name: "باب الملك عبد العزيز", lat: 21.4204, lng: 39.8257 },
-        { name: "الصفا والمروة (المسعى)", lat: 21.4225, lng: 39.8278 },
-        { name: "نقطة توزيع زمزم", lat: 21.4228, lng: 39.8265 },
-        { name: "حمامات الساحات الخارجية", lat: 21.4245, lng: 39.8305 }
-    ];
-
-    let map = L.map('map', { zoomControl: false }).setView([21.4225, 39.8262], 18);
-    let userMarker, pathLine = L.polyline([], {color: '#c69c6d', weight: 6}).addTo(map);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-
-    function requestLocation() {
-        if (!navigator.geolocation) return alert("موبايلك لا يدعم الخدمة");
-
-        const options = { enableHighAccuracy: true, timeout: 10000 };
-
-        navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                document.getElementById('welcome-screen').style.display = 'none';
-                startLiveTracking();
-            },
-            (err) => {
-                document.getElementById('safari-alert').style.display = 'block';
-                if(err.code === 1) alert("يرجى تفعيل الموقع من إعدادات المتصفح");
-            }, options
-        );
-    }
-
-    function startLiveTracking() {
-        navigator.geolocation.watchPosition((pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            const uPos = [lat, lng];
-
-            if (!userMarker) {
-                userMarker = L.circleMarker(uPos, {radius: 9, color: 'white', weight: 3, fillOpacity: 1, fillColor: '#007aff'}).addTo(map);
-            } else {
-                userMarker.setLatLng(uPos);
-            }
-
-            // تحديد المكان
-            let place = "ساحة الحرم";
-            destinations.forEach(d => {
-                if(map.distance(uPos, [d.lat, d.lng]) < 30) place = d.name;
-            });
-            document.getElementById('currentPlaceName').innerText = "أنت الآن في: " + place;
-        }, null, {enableHighAccuracy: true});
-    }
-
-    function search() {
-        let q = document.getElementById('searchInput').value;
-        let res = document.getElementById('searchResults');
-        res.innerHTML = '';
-        if(!q) { res.style.display = 'none'; return; }
-
-        destinations.filter(d => d.name.includes(q)).forEach(d => {
-            let item = document.createElement('div');
-            item.className = 'res-item';
-            item.innerText = d.name;
-            item.onclick = () => {
-                let start = userMarker ? userMarker.getLatLng() : [21.4225, 39.8262];
-                let end = [d.lat, d.lng];
-                pathLine.setLatLngs([start, end]);
-                let dist = map.distance(start, end);
-                document.getElementById('dVal').innerText = dist.toFixed(0);
-                document.getElementById('sVal').innerText = Math.round(dist / 0.7);
-                res.style.display = 'none';
-                map.fitBounds(pathLine.getBounds(), {padding: [60,60]});
-            };
-            res.appendChild(item);
+        let place = "ساحة الحرم";
+        destinations.forEach(d => {
+            if(map.distance(uPos, [d.lat, d.lng]) < 30) place = d.name;
         });
-        res.style.display = 'block';
-    }
-</script>
-</body>
-</html>
+
+        document.getElementById('currentPlaceName').innerText =
+            "أنت الآن في: " + place;
+
+    },
+    (err)=>{
+        alert("تعذر تحديث الموقع — تأكد من تشغيل GPS");
+        console.log(err);
+    },
+    {
+        enableHighAccuracy: true,
+        maximumAge: 5000,
+        timeout: 10000
+    });
+}
