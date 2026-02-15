@@ -9,162 +9,158 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        :root { --primary: #1b5e20; --accent: #c69c6d; --white: #ffffff; }
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #f4f4f4; height: 100vh; display: flex; flex-direction: column; }
+        :root { --primary: #1b5e20; --accent: #c69c6d; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; overflow: hidden; }
         
-        /* شريط الحالة العلوي */
-        .top-status {
-            position: absolute; top: 10px; left: 10px; right: 10px; z-index: 1000;
-            background: var(--white); padding: 12px; border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px;
-        }
-        .dot { height: 10px; width: 10px; background-color: #ff3b30; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
-        @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.3;} 100% {opacity: 1;} }
+        #map { height: 100vh; width: 100%; z-index: 1; filter: grayscale(20%); }
 
-        #map { flex-grow: 1; width: 100%; z-index: 1; }
-
-        /* البحث الجذاب */
-        .search-box {
-            position: absolute; top: 75px; left: 10px; right: 10px; z-index: 1000;
+        /* طبقة حماية تطلب الموقع */
+        #location-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 20px; box-sizing: border-box;
         }
+
+        .share-btn {
+            background: var(--primary); color: white; border: none; padding: 20px 40px;
+            border-radius: 50px; font-size: 20px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(27, 94, 32, 0.3); transition: 0.3s;
+        }
+
+        /* واجهة البحث والبيانات */
+        .ui-container {
+            position: absolute; bottom: 20px; left: 10px; right: 10px; z-index: 2000;
+        }
+
+        .search-bar {
+            background: white; padding: 12px; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 10px;
+        }
+
         #searchInput {
-            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #ddd;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-size: 16px; outline: none; box-sizing: border-box;
+            width: 100%; border: none; font-size: 16px; outline: none; text-align: right;
         }
 
-        /* اللوحة السفلية العصرية */
-        .bottom-sheet {
-            background: var(--white); padding: 20px; border-radius: 25px 25px 0 0;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1000;
+        .info-card {
+            background: var(--primary); color: white; padding: 15px; border-radius: 15px;
+            display: flex; justify-content: space-around; text-align: center;
         }
-        .nav-info { display: flex; justify-content: space-around; margin-bottom: 20px; }
-        .info-card { text-align: center; flex: 1; }
-        .info-card b { display: block; font-size: 20px; color: var(--primary); }
-        .info-card span { font-size: 12px; color: #888; }
 
-        .action-btn {
-            width: 100%; background: var(--primary); color: white; border: none;
-            padding: 16px; border-radius: 15px; font-weight: bold; font-size: 16px;
-            box-shadow: 0 4px 10px rgba(27, 94, 32, 0.3);
-        }
+        .stat b { display: block; font-size: 18px; }
+        .stat span { font-size: 12px; opacity: 0.8; }
 
         .search-results {
-            position: absolute; top: 60px; left: 0; right: 0; background: white;
-            border-radius: 10px; max-height: 200px; overflow-y: auto; display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white; border-radius: 10px; max-height: 150px; 
+            overflow-y: auto; display: none; margin-bottom: 5px;
         }
-        .result-item { padding: 15px; border-bottom: 1px solid #eee; font-weight: 500; }
+        .res-item { padding: 12px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="top-status">
-    <span class="dot" id="statusDot"></span>
-    <span id="userLocationText" style="font-weight: bold; font-size: 14px;">جاري البحث عن موقعك...</span>
-</div>
-
-<div class="search-box">
-    <input type="text" id="searchInput" placeholder="أين تريد الذهاب؟ (زمزم، باب، حمامات...)" oninput="handleSearch()">
-    <div id="results" class="search-results"></div>
+<div id="location-overlay">
+    <div style="font-size: 50px; margin-bottom: 20px;">📍</div>
+    <h2 style="color: var(--primary);">مرحباً بك في الحرم</h2>
+    <p>لتحديد مكانك وتوجيهك للأبواب والخدمات، يرجى الضغط على الزر أدناه</p>
+    <button class="share-btn" onclick="activateGPS()">مشاركة الموقع الآن</button>
 </div>
 
 <div id="map"></div>
 
-<div class="bottom-sheet">
-    <div class="nav-info">
-        <div class="info-card"><b id="distText">0</b><span>متر</span></div>
-        <div class="info-card"><b id="stepText">0</b><span>خطوة</span></div>
-        <div class="info-card"><b id="timeText">0</b><span>دقيقة</span></div>
+<div class="ui-container">
+    <div id="results" class="search-results"></div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="ابحث عن (باب، زمزم، حمامات...)" oninput="doSearch()">
     </div>
-    <button class="action-btn" onclick="startTracking()">تفعيل التتبع المباشر 🧭</button>
+    <div class="info-card">
+        <div class="stat"><b id="distText">0</b><span>متر</span></div>
+        <div class="stat"><b id="stepText">0</b><span>خطوة</span></div>
+        <div class="stat"><b id="locationName">--</b><span>موقعك الحالي</span></div>
+    </div>
 </div>
 
 <script>
-    const locations = [
-        { name: "باب الملك عبد العزيز (1)", lat: 21.4204, lng: 39.8257, type: "gate" },
-        { name: "باب الملك فهد (79)", lat: 21.4214, lng: 39.8235, type: "gate" },
-        { name: "باب العمرة", lat: 21.4237, lng: 39.8248, type: "gate" },
-        { name: "جبل الصفا", lat: 21.4215, lng: 39.8275, type: "holy" },
-        { name: "جبل المروة", lat: 21.4255, lng: 39.8282, type: "holy" },
-        { name: "زمزم - الصحن", lat: 21.4228, lng: 39.8265, type: "water" },
-        { name: "حمامات الساحة الشرقية", lat: 21.4245, lng: 39.8305, type: "wc" }
+    // بيانات دقيقة للأماكن
+    const points = [
+        { name: "الكعبة المشرفة", lat: 21.422487, lng: 39.826206 },
+        { name: "باب الملك عبد العزيز", lat: 21.4204, lng: 39.8257 },
+        { name: "باب الملك فهد", lat: 21.4214, lng: 39.8235 },
+        { name: "حمامات الساحة الشرقية", lat: 21.4245, lng: 39.8305 },
+        { name: "نقطة زمزم الصحن", lat: 21.4228, lng: 39.8265 }
     ];
 
     var map = L.map('map', { zoomControl: false }).setView([21.4225, 39.8262], 18);
-    var userMarker, polyline = L.polyline([], {color: '#c69c6d', weight: 5}).addTo(map);
+    var userMarker, polyline = L.polyline([], {color: '#c69c6d', weight: 6}).addTo(map);
 
-    // خريطة شوارع ملونة وأوضح للموبايل
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    function startTracking() {
-        if (!navigator.geolocation) {
-            alert("موبايلك لا يدعم تحديد الموقع");
-            return;
+    function activateGPS() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(onFirstSuccess, onError, {enableHighAccuracy: true});
+        } else {
+            alert("المتصفح لا يدعم تحديد الموقع");
         }
+    }
 
-        navigator.geolocation.watchPosition(success, error, {
+    function onFirstSuccess(pos) {
+        // إخفاء الشاشة الافتتاحية
+        document.getElementById('location-overlay').style.display = 'none';
+        
+        // بدء التتبع الحي
+        navigator.geolocation.watchPosition(updateUserLocation, onError, {
             enableHighAccuracy: true,
-            timeout: 5000,
             maximumAge: 0
         });
     }
 
-    function success(pos) {
+    function updateUserLocation(pos) {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         const currentPos = [lat, lng];
 
         if (!userMarker) {
-            userMarker = L.circleMarker(currentPos, {radius: 10, color: '#007aff', fillOpacity: 1}).addTo(map);
+            userMarker = L.circleMarker(currentPos, {radius: 8, color: '#007aff', fillOpacity: 1, fillColor: '#007aff'}).addTo(map);
         } else {
             userMarker.setLatLng(currentPos);
         }
-        
-        document.getElementById('statusDot').style.backgroundColor = '#2ecc71';
-        map.panTo(currentPos);
-        checkNearest(lat, lng);
-    }
 
-    function error() {
-        document.getElementById('userLocationText').innerText = "فشل تحديد الموقع - فعل الـ GPS";
-    }
-
-    function checkNearest(lat, lng) {
-        let nearest = "في ساحة الحرم";
-        locations.forEach(loc => {
-            let d = map.distance([lat, lng], [loc.lat, loc.lng]);
-            if (d < 25) nearest = loc.name;
+        // تحديث اسم المكان القريب
+        let closest = "ساحة الحرم";
+        points.forEach(p => {
+            if(map.distance(currentPos, [p.lat, p.lng]) < 30) closest = p.name;
         });
-        document.getElementById('userLocationText').innerText = "أنت الآن في: " + nearest;
+        document.getElementById('locationName').innerText = closest;
     }
 
-    function handleSearch() {
+    function onError(err) {
+        alert("يرجى تفعيل الموقع من إعدادات المتصفح لكي يعمل التطبيق");
+    }
+
+    function doSearch() {
         let q = document.getElementById('searchInput').value;
-        let resDiv = document.getElementById('results');
-        resDiv.innerHTML = '';
-        if(q.length < 1) { resDiv.style.display = 'none'; return; }
+        let res = document.getElementById('results');
+        res.innerHTML = '';
+        if(q.length < 1) { res.style.display = 'none'; return; }
 
-        locations.filter(l => l.name.includes(q)).forEach(loc => {
+        points.filter(p => p.name.includes(q)).forEach(p => {
             let d = document.createElement('div');
-            d.className = 'result-item';
-            d.innerText = loc.name;
+            d.className = 'res-item';
+            d.innerText = p.name;
             d.onclick = () => {
-                let dest = [loc.lat, loc.lng];
-                polyline.setLatLngs([userMarker ? userMarker.getLatLng() : [21.4225, 39.8262], dest]);
-                let dist = map.distance(userMarker ? userMarker.getLatLng() : [21.4225, 39.8262], dest);
-                document.getElementById('distText').innerText = dist.toFixed(0);
-                document.getElementById('stepText').innerText = Math.round(dist / 0.7);
-                document.getElementById('timeText').innerText = Math.round(dist / 80) || 1;
-                resDiv.style.display = 'none';
-                map.fitBounds(polyline.getBounds());
+                let dest = [p.lat, p.lng];
+                let start = userMarker ? userMarker.getLatLng() : [21.4225, 39.8262];
+                polyline.setLatLngs([start, dest]);
+                let distance = map.distance(start, dest).toFixed(0);
+                document.getElementById('distText').innerText = distance;
+                document.getElementById('stepText').innerText = Math.round(distance / 0.75);
+                res.style.display = 'none';
+                map.fitBounds(polyline.getBounds(), {padding: [50,50]});
             };
-            resDiv.appendChild(d);
+            res.appendChild(d);
         });
-        resDiv.style.display = 'block';
+        res.style.display = 'block';
     }
-
-    // طلب الموقع تلقائياً عند التحميل
-    window.onload = startTracking;
 </script>
 </body>
 </html>
