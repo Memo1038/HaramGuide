@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مرشد الحرم الذكي - النسخة النقية</title>
+    <title>مرشد الحرم الذكي</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -12,35 +12,31 @@
         :root { --gold: #c69c6d; --green: #1b5e20; }
         body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; height: 100vh; overflow: hidden; background: #000; }
         
-        /* شاشة البداية المحسنة */
+        /* شاشة البداية بصورة الكعبة الحقيقية */
         #welcome-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                        url('https://images.unsplash.com/photo-1565019053020-13365846a10a?auto=format&fit=crop&w=1200&q=80');
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&w=1500&q=80');
             background-size: cover; background-position: center;
             z-index: 9999; display: flex; flex-direction: column;
             align-items: center; justify-content: center; color: white; text-align: center;
         }
 
         .start-btn {
-            background: var(--gold); color: white; border: none; padding: 16px 45px;
-            border-radius: 50px; font-size: 19px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s;
+            background: var(--gold); color: white; border: none; padding: 18px 50px;
+            border-radius: 50px; font-size: 20px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.4s;
         }
 
         #map { height: 100vh; width: 100%; }
 
-        /* شريط المعلومات العلوي */
         .status-bar {
             position: absolute; top: 15px; left: 10px; right: 10px; z-index: 1000;
-            background: rgba(255,255,255,0.95); padding: 14px; border-radius: 15px;
+            background: rgba(255,255,255,0.95); padding: 15px; border-radius: 15px;
             display: flex; align-items: center; gap: 12px; border: 1px solid var(--gold);
         }
 
-        /* لوحة التحكم السفلية */
-        .dash-container {
-            position: absolute; bottom: 25px; left: 10px; right: 10px; z-index: 1000;
-        }
+        .dash-container { position: absolute; bottom: 25px; left: 10px; right: 10px; z-index: 1000; }
         
         .search-results {
             background: white; border-radius: 12px; max-height: 180px; overflow-y: auto;
@@ -50,7 +46,7 @@
 
         .search-input {
             width: 100%; padding: 16px; border-radius: 15px; border: none;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.3); font-size: 16px; margin-bottom: 10px; outline: none;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3); font-size: 16px; margin-bottom: 10px; outline: none; text-align: right;
         }
 
         .stats-panel {
@@ -58,15 +54,15 @@
             display: flex; justify-content: space-around; text-align: center;
             border: 2px solid var(--gold);
         }
-        .stat-box b { display: block; font-size: 20px; color: var(--gold); }
+        .stat-box b { display: block; font-size: 22px; color: var(--gold); }
         .stat-box span { font-size: 11px; opacity: 0.8; }
     </style>
 </head>
 <body>
 
 <div id="welcome-screen">
-    <h1 style="margin: 0;">مساعد الحرم الذكي</h1>
-    <p style="margin: 15px 0 30px;">توجيه دقيق في أطهر بقاع الأرض</p>
+    <h1 style="margin: 0; font-size: 2.5em;">مساعد الحرم الذكي</h1>
+    <p style="margin: 15px 0 30px; font-size: 1.2em;">توجيه دقيق في أطهر بقاع الأرض</p>
     <button class="start-btn" onclick="initNavigation()">ابدأ الملاحة الحية</button>
 </div>
 
@@ -79,7 +75,7 @@
 
 <div class="dash-container">
     <div id="results" class="search-results"></div>
-    <input type="text" class="search-input" id="searchInp" placeholder="ابحث عن الباب، المسعى، المصلى..." oninput="handleSearch()">
+    <input type="text" class="search-input" id="searchInp" placeholder="ابحث عن وجهتك (باب، زمزم، المسعى)..." oninput="handleSearch()">
     <div class="stats-panel">
         <div class="stat-box"><b id="distVal">0</b><span>متر للهدف</span></div>
         <div class="stat-box"><b id="stepVal">0</b><span>خطوة متبقية</span></div>
@@ -92,17 +88,17 @@
         { name: "الكعبة المشرفة", lat: 21.4225, lng: 39.8262 },
         { name: "باب الملك فهد", lat: 21.4214, lng: 39.8235 },
         { name: "باب الملك عبد العزيز", lat: 21.4204, lng: 39.8257 },
-        { name: "جبل الصفا", lat: 21.4215, lng: 39.8275 },
-        { name: "جبل المروة", lat: 21.4255, lng: 39.8282 },
-        { name: "توسعة الملك عبد الله", lat: 21.4255, lng: 39.8245 }
+        { name: "جبل الصفا (المسعى)", lat: 21.4215, lng: 39.8275 },
+        { name: "جبل المروة (المسعى)", lat: 21.4255, lng: 39.8282 },
+        { name: "توسعة الملك عبد الله", lat: 21.4255, lng: 39.8245 },
+        { name: "مكتب المفقودات", lat: 21.4235, lng: 39.8220 }
     ];
 
     let map, userMkr, targetMkr, line;
 
-    // تهيئة الخريطة بصور عالية الجودة
+    // تهيئة الخريطة بصور Esri عالية الدقة
     map = L.map('map', { zoomControl: false }).setView([21.4225, 39.8262], 18);
 
-    // استخدام محرك خرائط Esri World Imagery (أدق وأصفى من جوجل المجاني في مكة)
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19,
         attribution: 'Esri World Imagery'
@@ -113,8 +109,9 @@
     function initNavigation() {
         document.getElementById('welcome-screen').style.display = 'none';
         if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(update, err => alert("فشل تحديد الموقع"), {
-                enableHighAccuracy: true
+            navigator.geolocation.watchPosition(update, err => console.log(err), {
+                enableHighAccuracy: true,
+                maximumAge: 0
             });
         }
     }
@@ -133,10 +130,10 @@
             let d = map.distance(uPos, targetMkr.getLatLng());
             document.getElementById('distVal').innerText = Math.round(d);
             document.getElementById('stepVal').innerText = Math.round(d / 0.7);
-            document.getElementById('timeVal').innerText = Math.round(d / 70);
+            document.getElementById('timeVal').innerText = Math.round(d / 75);
             line.setLatLngs([uPos, targetMkr.getLatLng()]);
         }
-        document.getElementById('locStatus').innerText = "أنت الآن في: محيط الحرم";
+        document.getElementById('locStatus').innerText = "أنت الآن في محيط الحرم";
     }
 
     function handleSearch() {
