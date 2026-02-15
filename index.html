@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مرشد الحرم الذكي | محمد الرشيدي</title>
+    <title>مرشد الحرم الشامل | محمد الرشيدي</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         :root { --primary: #1b5e20; --accent: #c69c6d; --bg: #f8f9fa; }
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; height: 100vh; background: var(--bg); overflow: hidden; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; background: var(--bg); overflow: hidden; }
         
-        /* شاشة الترحيب */
+        /* شاشة البداية */
         #welcome-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: white; z-index: 9999; display: flex; flex-direction: column;
@@ -22,16 +22,10 @@
         .main-btn {
             background: var(--primary); color: white; border: none; padding: 18px 45px;
             border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 10px 25px rgba(27, 94, 32, 0.3); transition: 0.3s;
+            box-shadow: 0 10px 25px rgba(27, 94, 32, 0.3);
         }
 
-        /* تنبيه سافاري آيفون */
-        #safari-alert {
-            display: none; background: #fff3cd; color: #856404; padding: 15px;
-            border-radius: 12px; margin-top: 20px; font-size: 14px; border: 1px solid #ffeeba;
-        }
-
-        /* الواجهة الرئيسية */
+        /* الواجهة */
         #map { height: 100vh; width: 100%; z-index: 1; }
         
         .top-bar {
@@ -43,11 +37,11 @@
         @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); } }
 
         .bottom-panel { position: absolute; bottom: 25px; left: 10px; right: 10px; z-index: 1000; }
-        .search-results { background: white; border-radius: 12px; max-height: 180px; overflow-y: auto; display: none; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #eee; }
-        .res-item { padding: 15px; border-bottom: 1px solid #eee; font-size: 15px; cursor: pointer; color: #333; text-align: right; }
+        .search-results { background: white; border-radius: 12px; max-height: 200px; overflow-y: auto; display: none; margin-bottom: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .res-item { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; text-align: right; cursor: pointer; }
         
         .search-input { width: 100%; padding: 16px; border-radius: 15px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.15); font-size: 16px; margin-bottom: 10px; outline: none; box-sizing: border-box; text-align: right; }
-        .stats-box { background: var(--primary); color: white; padding: 15px; border-radius: 18px; display: flex; justify-content: space-around; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .stats-box { background: var(--primary); color: white; padding: 15px; border-radius: 18px; display: flex; justify-content: space-around; }
         .stat-item b { display: block; font-size: 19px; }
         .stat-item span { font-size: 11px; opacity: 0.9; }
     </style>
@@ -56,94 +50,78 @@
 
 <div id="welcome-screen">
     <div style="font-size: 60px; margin-bottom: 10px;">🕋</div>
-    <h2 style="color: var(--primary); margin: 0;">مساعد الحرم الذكي</h2>
-    <p style="color: #666; font-size: 15px; margin: 15px 0 25px; line-height: 1.5;">أهلاً بك يا محمد<br>اضغط للبدء وسنتعرف على مكانك فوراً</p>
-    <button class="main-btn" id="startBtn" onclick="requestLocation()">ابدأ مشاركة الموقع</button>
-    
-    <div id="safari-alert">
-        <b>تنبيه لمستخدمي آيفون:</b><br>
-        اضغط على <b>AA</b> في شريط الرابط ثم <b>إعدادات الموقع</b> واجعل الوصول <b>سماح</b>.
-    </div>
+    <h2 style="color: var(--primary);">مساعد الحرم الذكي</h2>
+    <p>أهلاً بك يا محمد.. اضغط لتفعيل خريطة المعالم الشاملة</p>
+    <button class="main-btn" onclick="requestLocation()">تفعيل الموقع والمعالم</button>
 </div>
 
 <div class="top-bar">
     <div class="pulse"></div>
-    <span id="currentPlaceName" style="font-weight: bold; font-size: 14px; color: #333;">أنت الآن في: في رحاب الحرم</span>
+    <span id="currentPlaceName" style="font-weight: bold; font-size: 14px;">أنت الآن في: في رحاب الحرم</span>
 </div>
 
 <div id="map"></div>
 
 <div class="bottom-panel">
     <div id="searchResults" class="search-results"></div>
-    <input type="text" class="search-input" id="searchInput" placeholder="أين وجهتك؟ (زمزم، باب، المسعى...)" oninput="search()">
+    <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن: باب، مصلى، زمزم، دورات مياه..." oninput="search()">
     <div class="stats-box">
         <div class="stat-item"><b id="dVal">0</b><span>متر للهدف</span></div>
-        <div class="stat-item"><b id="sVal">0</b><span>خطوة تقريباً</span></div>
+        <div class="stat-item"><b id="sVal">0</b><span>خطوة</span></div>
     </div>
 </div>
 
 <script>
-    // قاعدة بيانات الأماكن
+    // قاعدة بيانات الحرم (داخلية وخارجية)
     const destinations = [
         { name: "الكعبة المشرفة - صحن المطاف", lat: 21.4225, lng: 39.8262 },
-        { name: "باب الملك فهد (79)", lat: 21.4214, lng: 39.8235 },
+        { name: "حجر إسماعيل", lat: 21.4227, lng: 39.8261 },
+        { name: "مقام إبراهيم", lat: 21.4226, lng: 39.8264 },
         { name: "باب الملك عبد العزيز (1)", lat: 21.4204, lng: 39.8257 },
-        { name: "جبل الصفا (بداية المسعى)", lat: 21.4215, lng: 39.8275 },
-        { name: "جبل المروة (نهاية المسعى)", lat: 21.4255, lng: 39.8282 },
-        { name: "مشربيات زمزم الرئيسية", lat: 21.4228, lng: 39.8265 },
-        { name: "حمامات الساحات الخارجية", lat: 21.4245, lng: 39.8305 }
+        { name: "باب الملك فهد (79)", lat: 21.4214, lng: 39.8235 },
+        { name: "باب العمرة (62)", lat: 21.4237, lng: 39.8248 },
+        { name: "باب الفتح (45)", lat: 21.4246, lng: 39.8263 },
+        { name: "جبل الصفا - بداية المسعى", lat: 21.4215, lng: 39.8275 },
+        { name: "جبل المروة - نهاية المسعى", lat: 21.4255, lng: 39.8282 },
+        { name: "توسعة الملك عبد الله", lat: 21.4255, lng: 39.8245 },
+        { name: "صنابير مياه زمزم - الصحن", lat: 21.4228, lng: 39.8265 },
+        { name: "دورات مياه الساحة الشرقية", lat: 21.4245, lng: 39.8305 },
+        { name: "مصاعد الأبراج المؤدية للحرم", lat: 21.4195, lng: 39.8250 },
+        { name: "مكتبة الحرم المكي", lat: 21.4240, lng: 39.8290 }
     ];
 
     const haramDefault = [21.4225, 39.8262];
     let map = L.map('map', { zoomControl: false }).setView(haramDefault, 18);
-    let userMarker, pathLine = L.polyline([], {color: '#c69c6d', weight: 6, opacity: 0.8}).addTo(map);
+    let userMarker, pathLine = L.polyline([], {color: '#c69c6d', weight: 6}).addTo(map);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
     function requestLocation() {
-        // إخفاء شاشة الترحيب فوراً لكسر الجمود
         document.getElementById('welcome-screen').style.display = 'none';
-        
         if (navigator.geolocation) {
-            // محاولة جلب الموقع الحقيقي مع تتبع مستمر
-            navigator.geolocation.watchPosition(updatePosition, handleError, {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            });
-        } else {
-            handleError();
-        }
+            navigator.geolocation.watchPosition(updatePosition, handleError, {enableHighAccuracy: true});
+        } else { handleError(); }
     }
 
     function updatePosition(pos) {
         const uPos = [pos.coords.latitude, pos.coords.longitude];
-        
         if (!userMarker) {
             userMarker = L.circleMarker(uPos, {radius: 10, color: 'white', weight: 3, fillOpacity: 1, fillColor: '#007aff'}).addTo(map);
             map.panTo(uPos);
-        } else {
-            userMarker.setLatLng(uPos);
-        }
+        } else { userMarker.setLatLng(uPos); }
 
-        // تحديد اسم المكان الدقيق
         let placeName = "ساحة الحرم";
         destinations.forEach(d => {
-            if(map.distance(uPos, [d.lat, d.lng]) < 40) placeName = d.name;
+            if(map.distance(uPos, [d.lat, d.lng]) < 35) placeName = d.name;
         });
-        
-        // تحديث النص في الشريط العلوي
         document.getElementById('currentPlaceName').innerText = "أنت هنا في (" + placeName + ")";
     }
 
-    function handleError(err) {
-        console.warn("Geolocation fallback activated.");
-        // إذا فشل الـ GPS نضع المستخدم افتراضياً في الحرم ليتمكن من تجربة التطبيق
+    function handleError() {
         if (!userMarker) {
             userMarker = L.circleMarker(haramDefault, {radius: 10, color: 'white', weight: 3, fillOpacity: 1, fillColor: '#888'}).addTo(map);
         }
-        document.getElementById('currentPlaceName').innerText = "أنت هنا في (ساحة الحرم - موقع افتراضي)";
-        if(err && err.code === 1) document.getElementById('safari-alert').style.display = 'block';
+        document.getElementById('currentPlaceName').innerText = "أنت هنا في (موقع افتراضي)";
     }
 
     function search() {
@@ -152,8 +130,7 @@
         res.innerHTML = '';
         if(!q) { res.style.display = 'none'; return; }
 
-        const filtered = destinations.filter(d => d.name.includes(q));
-        filtered.forEach(d => {
+        destinations.filter(d => d.name.includes(q)).forEach(d => {
             let item = document.createElement('div');
             item.className = 'res-item';
             item.innerText = d.name;
@@ -169,7 +146,7 @@
             };
             res.appendChild(item);
         });
-        res.style.display = filtered.length > 0 ? 'block' : 'none';
+        res.style.display = 'block';
     }
 </script>
 </body>
