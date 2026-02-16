@@ -3,128 +3,124 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الحرم المكي - الملاحة التفاعلية</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-
+<title>المساعد الصوتي للمعتمرين 24/7</title>
 <style>
-body { margin:0; font-family: 'Segoe UI', sans-serif; }
-#map { height: 100vh; width: 100%; }
-#controls {
-  position: absolute;
-  top: 10px; left: 50%; transform: translateX(-50%);
-  z-index: 1000; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-#controls select {
-  padding: 6px; font-size: 16px; margin: 5px;
-}
-#controls button {
-  padding: 6px 12px; font-size: 16px; margin: 5px; cursor: pointer; border-radius:5px;
-}
+body { font-family: 'Segoe UI', sans-serif; background:#f8f9fa; margin:0; display:flex; flex-direction:column; align-items:center; }
+h1 { text-align:center; margin-top:20px; }
+#assistant { margin-top:20px; width:90%; max-width:600px; background:white; border-radius:10px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.2);}
+#messages { height:300px; overflow-y:auto; border:1px solid #ddd; border-radius:5px; padding:10px; margin-bottom:10px; background:#fafafa;}
+.message { margin:5px 0; padding:8px 12px; border-radius:8px; max-width:80%; }
+.user { background:#4A90E2; color:white; margin-left:auto; text-align:right;}
+.ai { background:#A8E6CF; color:#000; margin-right:auto; text-align:left;}
+#controls { display:flex; gap:10px; }
+#input { flex:1; padding:10px; font-size:16px; border-radius:5px; border:1px solid #ccc; }
+button { padding:10px 15px; font-size:16px; border:none; border-radius:5px; cursor:pointer; background:#009688; color:white; }
+button:hover { background:#00796B; }
 </style>
 </head>
 <body>
 
-<div id="controls">
-  <select id="startSelect">
-    <option value="">اختر نقطة البداية</option>
-  </select>
-  <select id="endSelect">
-    <option value="">اختر نقطة النهاية</option>
-  </select>
-  <button id="routeBtn">اظهار المسار</button>
+<h1>المساعد الصوتي للمعتمرين 24/7</h1>
+
+<div id="assistant">
+  <div id="messages"></div>
+  <div id="controls">
+    <input type="text" id="input" placeholder="اكتب سؤالك أو اضغط على الميكروفون للتحدث">
+    <button id="send">إرسال</button>
+    <button id="voice">🎤</button>
+  </div>
 </div>
 
-<div id="map"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-
 <script>
-// إنشاء الخريطة
-var map = L.map('map').setView([21.4225, 39.8262], 17);
+// عناصر الصفحة
+const messages = document.getElementById('messages');
+const input = document.getElementById('input');
+const sendBtn = document.getElementById('send');
+const voiceBtn = document.getElementById('voice');
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap',
-}).addTo(map);
-
-// نقاط الحرم المهمة
-var points = [
-  {name:"الكعبة المشرفة", coords:[21.422487, 39.826206]},
-  {name:"مقام إبراهيم", coords:[21.4226, 39.8263]},
-  {name:"بئر زمزم", coords:[21.4226, 39.8261]},
-  {name:"باب الملك عبدالعزيز", coords:[21.4199, 39.8256]},
-  {name:"باب السلام", coords:[21.4229, 39.8247]},
-  {name:"باب الفتح", coords:[21.4253, 39.8289]},
-  {name:"باب العمرة", coords:[21.4242, 39.8294]},
-  {name:"باب الصفا", coords:[21.4215, 39.8279]},
-  {name:"باب الملك فهد", coords:[21.4220, 39.8237]},
-  {name:"باب أجياد", coords:[21.4207, 39.8262]},
-  {name:"الصفا", coords:[21.4217, 39.8277]},
-  {name:"المروة", coords:[21.4249, 39.8292]},
-  {name:"مجمع الحمامات الشمالية", coords:[21.4254, 39.8279]},
-  {name:"مجمع الحمامات الجنوبية", coords:[21.4195, 39.8260]}
-];
-
-// إضافة نقاط على الخريطة وملء القوائم
-var markers = [];
-var startSelect = document.getElementById('startSelect');
-var endSelect = document.getElementById('endSelect');
-
-points.forEach(function(p, index){
-  var marker = L.marker(p.coords).addTo(map).bindPopup("<b>"+p.name+"</b>");
-  markers.push({marker:marker, name:p.name, coords:p.coords});
-
-  var optionStart = document.createElement('option');
-  optionStart.value = index;
-  optionStart.text = p.name;
-  startSelect.appendChild(optionStart);
-
-  var optionEnd = document.createElement('option');
-  optionEnd.value = index;
-  optionEnd.text = p.name;
-  endSelect.appendChild(optionEnd);
-});
-
-// متغير المسار
-var routeControl = null;
-
-// زر إظهار المسار
-document.getElementById('routeBtn').addEventListener('click', function(){
-  var startIndex = startSelect.value;
-  var endIndex = endSelect.value;
-  if(startIndex === "" || endIndex === ""){
-    alert("اختر نقطة البداية والنهاية");
-    return;
-  }
-  var start = markers[startIndex].coords;
-  var end = markers[endIndex].coords;
-
-  if(routeControl) map.removeControl(routeControl);
-
-  routeControl = L.Routing.control({
-    waypoints: [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])],
-    createMarker: false,           // إخفاء العلامات الافتراضية
-    routeWhileDragging: false,
-    addWaypoints: false,
-    draggableWaypoints: false,
-    lineOptions: { styles: [{color: 'blue', opacity:0.8, weight:5}] },
-    show: false                   // إخفاء القائمة الجانبية
-  }).addTo(map);
-});
-
-// تتبع موقع المستخدم
-if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(function(position){
-    var lat = position.coords.latitude;
-    var lng = position.coords.longitude;
-    var userMarker = L.marker([lat, lng], {
-      icon:L.icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/64/64113.png", iconSize:[30,30]})
-    }).addTo(map).bindPopup("موقعك الحالي").openPopup();
-    map.setView([lat, lng], 17);
-  });
+// عرض رسالة
+function addMessage(text, sender){
+  const div = document.createElement('div');
+  div.className = 'message ' + sender;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
 }
+
+// تحويل النص إلى كلام
+function speak(text, lang='ar-SA'){
+  if('speechSynthesis' in window){
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    speechSynthesis.speak(utter);
+  }
+}
+
+// محاكاة الذكاء الصناعي (نسخة تجريبية)
+// لاحقًا يمكن ربطه بـ OpenAI API أو أي AI backend
+async function getAIResponse(userText){
+  // هنا يمكن إضافة استدعاء API خارجي للذكاء الصناعي
+  // مثال: OpenAI GPT API
+  // للنسخة التجريبية، نستخدم ردود جاهزة
+
+  userText = userText.toLowerCase();
+
+  // أمثلة الردود الذكية
+  if(userText.includes("أين أقرب حمام") || userText.includes("nearest bathroom")){
+    return "أقرب حمام يقع بالقرب من باب الملك عبدالعزيز، على يمينك عند الدخول.";
+  }
+  if(userText.includes("متى موعد الصلاة") || userText.includes("prayer time")){
+    return "وقت الصلاة القادمة هو الفجر الساعة 5:10 صباحًا.";
+  }
+  if(userText.includes("كم عدد الأشواط") || userText.includes("tawaf count")){
+    return "لقد أكملت 3 أشواط من الطواف، تبقى 4 أشواط.";
+  }
+  if(userText.includes("أذكار") || userText.includes("adhkar")){
+    return "يمكنك قراءة أذكار الطواف بعد كل شوط: سبحان الله، الحمد لله، الله أكبر.";
+  }
+
+  return "عذرًا، لم أفهم سؤالك. حاول إعادة صياغة السؤال أو جرب سؤال آخر.";
+}
+
+// إرسال النص إلى الذكاء الاصطناعي
+async function sendMessage(){
+  const text = input.value.trim();
+  if(!text) return;
+  addMessage(text, 'user');
+  input.value = '';
+
+  const response = await getAIResponse(text);
+  addMessage(response, 'ai');
+  speak(response, text.match(/[a-zA-Z]/) ? 'en-US' : 'ar-SA');
+}
+
+// أحداث الأزرار
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
+
+// تسجيل الصوت
+let recognition;
+if('webkitSpeechRecognition' in window){
+  recognition = new webkitSpeechRecognition();
+  recognition.lang = 'ar-SA';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = function(event){
+    const speech = event.results[0][0].transcript;
+    input.value = speech;
+    sendMessage();
+  };
+}
+
+voiceBtn.addEventListener('click', ()=>{
+  if(recognition){
+    recognition.start();
+  } else {
+    alert("الميكروفون غير مدعوم في متصفحك.");
+  }
+});
+
 </script>
 
 </body>
