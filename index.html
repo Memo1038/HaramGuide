@@ -3,126 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مرشد الحرم - نسخة الموبايل</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+    <title>مرشد الحرم - توجيه خرائط جوجل</title>
     <style>
         :root { --gold: #c69c6d; --green: #1b5e20; }
-        body { margin: 0; font-family: sans-serif; background: #000; height: 100vh; overflow: hidden; }
-
-        /* شاشة التحميل مع زر تخطي في حال التعليق */
-        #welcome-screen {
-            position: fixed; inset: 0; z-index: 10000;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), 
-                        url('https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=1000&auto=format&fit=crop');
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f4f4; }
+        
+        /* شاشة ترحيب احترافية */
+        #welcome {
+            position: fixed; inset: 0; z-index: 2000;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&w=1000&q=80');
             background-size: cover; background-position: center;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;
         }
 
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .container { padding: 15px; }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: var(--green); border-right: 4px solid var(--gold); padding-right: 10px; font-size: 1.2em; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .place-btn { 
+            background: white; border: 1px solid #ddd; padding: 15px 10px; border-radius: 10px; 
+            text-align: center; font-weight: bold; font-size: 0.9em; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .place-btn:active { background: #f0f0f0; transform: scale(0.95); }
+        .icon { font-size: 1.5em; }
 
-        .skip-btn { margin-top: 20px; background: none; border: 1px solid white; color: white; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 14px; }
-
-        #map { height: 100vh; width: 100%; z-index: 1; }
-
-        .ui-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 1000; display: flex; flex-direction: column; }
-        .ui-overlay > * { pointer-events: auto; }
-
-        .header { background: rgba(255,255,255,0.95); margin: 10px; padding: 12px; border-radius: 12px; color: var(--green); text-align: center; font-weight: bold; font-size: 13px; }
-
-        .menu-container { margin-top: auto; background: white; border-radius: 20px 20px 0 0; padding: 15px; max-height: 50%; overflow-y: auto; color: #333; }
-        .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
-        .tab { padding: 8px 15px; background: #eee; border-radius: 20px; font-size: 12px; white-space: nowrap; cursor: pointer; }
-        .tab.active { background: var(--green); color: white; }
-
-        .list-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .go-btn { background: var(--gold); color: white; border: none; padding: 6px 15px; border-radius: 8px; cursor: pointer; }
+        .go-btn { background: var(--green); color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="welcome-screen">
-    <div class="loader"></div>
-    <h2 id="loading-text">جاري البحث عن إشارة GPS...</h2>
-    <p>تأكد من تفعيل "الموقع" في هاتفك</p>
-    <button class="skip-btn" onclick="forceStart()">دخول يدوي للخريطة</button>
+<div id="welcome" onclick="this.style.display='none'">
+    <h1>مساعد الحرم الذكي</h1>
+    <p>اضغط هنا للبدء</p>
 </div>
 
-<div class="ui-overlay">
-    <div class="header" id="status">📍 حدد وجهتك في الحرم</div>
-    <div class="menu-container">
-        <div class="tabs">
-            <div class="tab active" onclick="showCat('ground')">الأرضي</div>
-            <div class="tab" onclick="showCat('saei')">السعي</div>
-            <div class="tab" onclick="showCat('toilets')">الحمامات</div>
+<div class="container">
+    <div class="card">
+        <h2>🚪 أبواب الحرم الرئيسية</h2>
+        <div class="grid">
+            <div class="place-btn" onclick="openGMap(21.4204, 39.8257)">
+                <span class="icon">🕋</span> باب الملك عبدالعزيز
+            </div>
+            <div class="place-btn" onclick="openGMap(21.4214, 39.8235)">
+                <span class="icon">🕋</span> باب الملك فهد
+            </div>
         </div>
-        <div id="items-list"></div>
+    </div>
+
+    <div class="card">
+        <h2>🚻 دورات المياه (المواضي)</h2>
+        <div class="grid">
+            <div class="place-btn" onclick="openGMap(21.4245, 39.8305)">
+                <span class="icon">🚻</span> ساحة القشاشية
+            </div>
+            <div class="place-btn" onclick="openGMap(21.4210, 39.8210)">
+                <span class="icon">🚻</span> ساحة الشبيكة
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🍴 المطاعم والخدمات</h2>
+        <div class="grid">
+            <div class="place-btn" onclick="openGMap(21.4210, 39.8200)">
+                <span class="icon">🍔</span> مطعم البيك
+            </div>
+            <div class="place-btn" onclick="openGMap(21.4188, 39.8256)">
+                <span class="icon">🏢</span> أبراج البيت
+            </div>
+        </div>
     </div>
 </div>
 
-<div id="map"></div>
-
 <script>
-    const data = {
-        ground: [{ name: "باب الملك فهد", lat: 21.4214, lng: 39.8235 }, { name: "باب الملك عبد العزيز", lat: 21.4204, lng: 39.8257 }],
-        saei: [{ name: "الصافا", lat: 21.4215, lng: 39.8275 }, { name: "المروة", lat: 21.4255, lng: 39.8282 }],
-        toilets: [{ name: "حمامات القشاشية", lat: 21.4245, lng: 39.8305 }, { name: "حمامات الشبيكة", lat: 21.4210, lng: 39.8210 }]
-    };
-
-    let map, userMkr, targetMkr;
-
-    function initMap() {
-        map = L.map('map', { zoomControl: false }).setView([21.4225, 39.8262], 17);
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}').addTo(map);
-        showCat('ground');
+    function openGMap(lat, lng) {
+        // هذا الرابط يفتح تطبيق خرائط جوجل مباشرة على وضع "التوجيه" (Navigation)
+        window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`, '_blank');
     }
-
-    function requestLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    forceStart(); // إذا نجح التحديد، ادخل فوراً
-                    const u = [pos.coords.latitude, pos.coords.longitude];
-                    userMkr = L.circleMarker(u, { radius: 8, fillColor: '#007aff', color: '#fff', fillOpacity: 1 }).addTo(map);
-                    map.panTo(u);
-                },
-                (err) => {
-                    console.log("GPS Error: ", err);
-                    document.getElementById('loading-text').innerText = "فشل التحديد التلقائي. يرجى الدخول يدوياً.";
-                },
-                { enableHighAccuracy: true, timeout: 5000 }
-            );
-        }
-    }
-
-    function forceStart() {
-        document.getElementById('welcome-screen').style.display = 'none';
-        if (!map) initMap();
-    }
-
-    function showCat(cat) {
-        const list = document.getElementById('items-list');
-        list.innerHTML = '';
-        data[cat].forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'list-item';
-            div.innerHTML = `<span>${item.name}</span> <button class="go-btn" onclick="setTarget(${item.lat}, ${item.lng})">انتقال</button>`;
-            list.appendChild(div);
-        });
-    }
-
-    function setTarget(lat, lng) {
-        if (targetMkr) map.removeLayer(targetMkr);
-        targetMkr = L.marker([lat, lng]).addTo(map);
-        map.setView([lat, lng], 18);
-    }
-
-    // ابدأ محاولة جلب الموقع فوراً
-    initMap();
-    requestLocation();
 </script>
+
 </body>
 </html>
