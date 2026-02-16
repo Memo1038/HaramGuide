@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الحرم المكي - الملاحة التفاعلية</title>
 
-<!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-<!-- Leaflet Routing Machine CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 
 <style>
@@ -41,16 +38,13 @@ body { margin:0; font-family: 'Segoe UI', sans-serif; }
 
 <div id="map"></div>
 
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Leaflet Routing Machine JS -->
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
 <script>
 // إنشاء الخريطة
 var map = L.map('map').setView([21.4225, 39.8262], 17);
 
-// إضافة خرائط OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap',
 }).addTo(map);
@@ -93,8 +87,8 @@ points.forEach(function(p, index){
   endSelect.appendChild(optionEnd);
 });
 
-// Routing Machine
-var control = null;
+// متغير المسار
+var routeControl = null;
 
 // زر إظهار المسار
 document.getElementById('routeBtn').addEventListener('click', function(){
@@ -107,29 +101,31 @@ document.getElementById('routeBtn').addEventListener('click', function(){
   var start = markers[startIndex].coords;
   var end = markers[endIndex].coords;
 
-  if(control) {
-    map.removeControl(control);
-  }
+  if(routeControl) map.removeControl(routeControl);
 
-  control = L.Routing.control({
+  routeControl = L.Routing.control({
     waypoints: [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])],
+    createMarker: false,           // إخفاء العلامات الافتراضية
     routeWhileDragging: false,
-    show: true,
     addWaypoints: false,
     draggableWaypoints: false,
-    fitSelectedRoutes: true
+    lineOptions: { styles: [{color: 'blue', opacity:0.8, weight:5}] },
+    show: false                   // إخفاء القائمة الجانبية
   }).addTo(map);
 });
 
-// تحديد موقع المستخدم
+// تتبع موقع المستخدم
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(function(position){
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
-    var userMarker = L.marker([lat, lng], {icon:L.icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/64/64113.png", iconSize:[30,30]})}).addTo(map).bindPopup("موقعك الحالي").openPopup();
+    var userMarker = L.marker([lat, lng], {
+      icon:L.icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/64/64113.png", iconSize:[30,30]})
+    }).addTo(map).bindPopup("موقعك الحالي").openPopup();
     map.setView([lat, lng], 17);
   });
 }
 </script>
+
 </body>
 </html>
