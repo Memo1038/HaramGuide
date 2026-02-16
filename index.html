@@ -1,122 +1,77 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دليل الحرم الذكي | محمد الرشيدي</title>
-    <style>
-        :root { --gold: #c69c6d; --green: #1b5e20; --bg: #f4f7f4; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #333; padding-bottom: 50px; }
-
-        /* نافذة الخريطة التفاعلية */
-        .map-container {
-            position: sticky; top: 0; z-index: 1000;
-            width: 100%; height: 250px;
-            background: #eee; border-bottom: 4px solid var(--gold);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        .header { 
-            background: linear-gradient(135deg, var(--green), #0a3d0e); 
-            color: white; padding: 20px; text-align: center;
-        }
-
-        .container { padding: 15px; max-width: 800px; margin: auto; }
-        .section-title { 
-            display: flex; align-items: center; gap: 10px; margin: 20px 0 10px; 
-            color: var(--green); font-weight: bold; border-right: 5px solid var(--gold); padding-right: 12px;
-        }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-        .place-card {
-            background: white; border-radius: 15px; padding: 12px;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eef2ee;
-            cursor: pointer; transition: 0.2s;
-        }
-        .place-card:active { transform: scale(0.95); background: #f0f0f0; }
-        
-        .icon-box { font-size: 24px; margin-bottom: 5px; }
-        .place-name { font-size: 13px; font-weight: 700; color: #2c3e50; }
-
-        footer { text-align: center; margin-top: 30px; padding: 20px; color: #999; font-size: 11px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الحرم المكي - الملاحة</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  body { margin:0; font-family: 'Segoe UI', sans-serif; }
+  #map { height: 100vh; width: 100%; }
+  .leaflet-popup-content { font-size: 16px; }
+  #searchBox {
+    position: absolute;
+    top: 10px; left: 50%; transform: translateX(-50%);
+    z-index: 1000; width: 300px;
+  }
+  #searchInput {
+    width: 100%; padding: 8px; font-size: 16px; border-radius: 5px; border: 1px solid #999;
+  }
+</style>
 </head>
 <body>
 
-<div class="map-container" id="mapBox">
-    <iframe 
-        id="googleMap"
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m13!1d3714.8690!2d39.8261!3d21.4225!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c204b74d32cf2d%3A0xc436c6499313d42!2z2KfZhNmF2LPYrNivINin2YTYrdix2KfZhQ!5e0!3m2!1sar!2ssa!4v1700000000000!5m2!1sar!2ssa" 
-        allowfullscreen="" loading="lazy">
-    </iframe>
+<div id="searchBox">
+  <input type="text" id="searchInput" placeholder="ابحث عن بوابة أو حمام أو مطعم...">
 </div>
+<div id="map"></div>
 
-<div class="header">
-    <h2 style="margin:0; font-size:18px;">مرشد الحرم الداخلي</h2>
-    <p style="margin:5px 0 0; font-size:12px;">إشراف محمد الرشيدي - تحديث الخريطة الحية</p>
-</div>
-
-<div class="container">
-
-    <div class="section-title">🕋 <span>المعالم الداخلية</span></div>
-    <div class="grid">
-        <div class="place-card" onclick="updateMap(21.4225, 39.8262)">
-            <div class="icon-box">🕋</div>
-            <div class="place-name">صحن الطواف</div>
-        </div>
-        <div class="place-card" onclick="updateMap(21.4226, 39.8263)">
-            <div class="icon-box">📍</div>
-            <div class="place-name">مقام إبراهيم</div>
-        </div>
-    </div>
-
-    <div class="section-title">🚪 <span>البوابات الرئيسية</span></div>
-    <div class="grid">
-        <div class="place-card" onclick="updateMap(21.4199, 39.8256)">
-            <div class="icon-box">1️⃣</div>
-            <div class="place-name">باب الملك عبدالعزيز</div>
-        </div>
-        <div class="place-card" onclick="updateMap(21.4220, 39.8237)">
-            <div class="icon-box">7️⃣9️⃣</div>
-            <div class="place-name">باب الملك فهد</div>
-        </div>
-        <div class="place-card" onclick="updateMap(21.4233, 39.8210)">
-            <div class="icon-box">🔟</div>
-            <div class="place-name">باب الملك عبدالله</div>
-        </div>
-    </div>
-
-    <div class="section-title">🚻 <span>الخدمات (داخلي)</span></div>
-    <div class="grid">
-        <div class="place-card" onclick="updateMap(21.4219, 39.8235)">
-            <div class="icon-box">🚻</div>
-            <div class="place-name">حمامات فهد</div>
-        </div>
-        <div class="place-card" onclick="updateMap(21.4195, 39.8260)">
-            <div class="icon-box">🚻</div>
-            <div class="place-name">حمامات أجياد</div>
-        </div>
-    </div>
-
-</div>
-
-<footer>
-    دليل الحرم التفاعلي © 2026 - محمد الرشيدي
-</footer>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    function updateMap(lat, lng) {
-        // هذه الدالة تقوم بتحديث الخريطة في الأعلى عند الضغط على أي مكان
-        const newUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=19&output=embed`;
-        document.getElementById('googleMap').src = newUrl;
-        
-        // التمرير للأعلى لرؤية الخريطة
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+// إنشاء الخريطة
+var map = L.map('map').setView([21.4225, 39.8262], 17);
+
+// إضافة طبقة الخرائط الأساسية
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap',
+}).addTo(map);
+
+// نقاط الحرم
+var points = [
+  {name:"الكعبة المشرفة", coords:[21.422487, 39.826206]},
+  {name:"مقام إبراهيم", coords:[21.4226, 39.8263]},
+  {name:"بئر زمزم", coords:[21.4226, 39.8261]},
+  {name:"باب الملك عبدالعزيز", coords:[21.4199, 39.8256]},
+  {name:"باب السلام", coords:[21.4229, 39.8247]},
+  {name:"باب الفتح", coords:[21.4253, 39.8289]},
+  {name:"باب العمرة", coords:[21.4242, 39.8294]},
+  {name:"باب الصفا", coords:[21.4215, 39.8279]},
+  {name:"باب الملك فهد", coords:[21.4220, 39.8237]},
+  {name:"باب أجياد", coords:[21.4207, 39.8262]},
+  {name:"الصفا", coords:[21.4217, 39.8277]},
+  {name:"المروة", coords:[21.4249, 39.8292]},
+  {name:"مجمع الحمامات الشمالية", coords:[21.4254, 39.8279]},
+  {name:"مجمع الحمامات الجنوبية", coords:[21.4195, 39.8260]}
+];
+
+// إنشاء علامات
+var markers = [];
+points.forEach(function(p){
+  var marker = L.marker(p.coords).addTo(map).bindPopup("<b>"+p.name+"</b>");
+  markers.push({marker:marker, name:p.name});
+});
+
+// البحث في النقاط
+var input = document.getElementById('searchInput');
+input.addEventListener('input', function(){
+  var val = input.value.toLowerCase();
+  markers.forEach(function(m){
+    if(m.name.toLowerCase().includes(val)){
+      map.setView(m.marker.getLatLng(), 18);
+      m.marker.openPopup();
     }
+  });
+});
 </script>
 
 </body>
