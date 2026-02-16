@@ -3,189 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Haram Guide - دليل الحرم الشامل</title>
+    <title>دليل الحرم الشامل | محمد الرشيدي</title>
     <style>
-        :root { --gold: #c69c6d; --green: #1b5e20; --bg: #f8f9fa; }
+        :root { --gold: #c69c6d; --green: #1b5e20; --bg: #f4f7f4; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: #333; line-height: 1.6; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #333; padding-bottom: 50px; }
 
-        /* الهيدر */
         .header { 
             background: linear-gradient(135deg, var(--green), #0a3d0e); 
-            color: white; padding: 30px 20px; text-align: center;
-            border-bottom: 5px solid var(--gold); border-radius: 0 0 30px 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            color: white; padding: 40px 20px; text-align: center;
+            border-bottom: 5px solid var(--gold); border-radius: 0 0 40px 40px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header p { margin: 5px 0 0; opacity: 0.9; font-size: 14px; }
 
-        /* البحث والقوائم */
-        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .container { padding: 15px; max-width: 800px; margin: auto; }
         
         .section-title { 
             display: flex; align-items: center; gap: 10px; 
-            margin: 25px 0 15px; color: var(--green); font-weight: bold; 
-            font-size: 18px; border-right: 4px solid var(--gold); padding-right: 10px;
+            margin: 30px 0 15px; color: var(--green); font-weight: bold; 
+            font-size: 1.1em; border-right: 5px solid var(--gold); padding-right: 12px;
         }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-        /* تصميم الزر (البطاقة) */
         .place-card {
-            background: white; border-radius: 15px; padding: 15px;
+            background: white; border-radius: 18px; padding: 15px;
             display: flex; flex-direction: column; align-items: center; text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee;
-            cursor: pointer; transition: 0.2s; text-decoration: none; color: inherit;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eef2ee;
+            cursor: pointer; transition: 0.3s; text-decoration: none; color: inherit;
         }
-        .place-card:active { transform: scale(0.95); background: #f0f0f0; }
-        .icon-circle { 
-            width: 50px; height: 50px; background: #f0f4f0; 
-            border-radius: 50%; display: flex; align-items: center; 
-            justify-content: center; font-size: 24px; margin-bottom: 10px;
+        .place-card:active { transform: scale(0.92); background: #f9f9f9; }
+        
+        .icon-box { 
+            width: 55px; height: 55px; background: #f0f7f0; 
+            border-radius: 15px; display: flex; align-items: center; 
+            justify-content: center; font-size: 26px; margin-bottom: 12px;
+            color: var(--green);
         }
-        .place-name { font-size: 13px; font-weight: 600; color: #444; }
-        .place-sub { font-size: 10px; color: #888; margin-top: 4px; }
+        
+        .place-name { font-size: 14px; font-weight: 700; color: #2c3e50; margin-bottom: 4px; }
+        .place-sub { font-size: 11px; color: #7f8c8d; font-weight: 500; }
 
-        /* الفوتر */
-        footer { text-align: center; padding: 30px; font-size: 12px; color: #aaa; }
+        footer { text-align: center; margin-top: 40px; padding: 20px; color: #999; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1 id="title">دليل الحرم المكي الشامل</h1>
-    <p id="subtitle">Haram Universal Guide</p>
+    <h1 id="mainTitle">مرشد الحرم المكي</h1>
+    <p id="mainSub">دليلك الذكي بجميع اللغات</p>
 </div>
 
-<div class="container" id="content">
-    <div class="section-title">🕋 <span data-ar="المشاعر المقدسة" data-en="Holy Landmarks">المشاعر المقدسة</span></div>
+<div class="container">
+
+    <div class="section-title">🕋 <span data-ar="المشاعر والمصليات" data-en="Holy Landmarks">المشاعر والمصليات</span></div>
     <div class="grid">
-        <div class="place-card" onclick="openGMap(21.4225, 39.8262)">
-            <div class="icon-circle">🕋</div>
-            <div class="place-name">الكعبة المشرفة</div>
-            <div class="place-sub">Kaaba</div>
+        <div class="place-card" onclick="openMap(21.4225, 39.8262)">
+            <div class="icon-box">🕋</div>
+            <div class="place-name">صحن الكعبة (المطاف)</div>
+            <div class="place-sub">Mataf Area</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.42252, 39.8263)">
-            <div class="icon-circle">📍</div>
+        <div class="place-card" onclick="openMap(21.4221, 39.8266)">
+            <div class="icon-box">⚫</div>
+            <div class="place-name">الحجر الأسود</div>
+            <div class="place-sub">The Black Stone</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.42252, 39.8263)">
+            <div class="icon-box">📍</div>
             <div class="place-name">مقام إبراهيم</div>
             <div class="place-sub">Maqam Ibrahim</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4221, 39.8266)">
-            <div class="icon-circle">⚫</div>
-            <div class="place-name">الحجر الأسود</div>
-            <div class="place-sub">Black Stone</div>
+        <div class="place-card" onclick="openMap(21.4227, 39.8261)">
+            <div class="icon-box">🌙</div>
+            <div class="place-name">حجر إسماعيل</div>
+            <div class="place-sub">Hijr Ismail</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4215, 39.8275)">
-            <div class="icon-circle">⛰️</div>
+        <div class="place-card" onclick="openMap(21.4215, 39.8275)">
+            <div class="icon-box">⛰️</div>
             <div class="place-name">جبل الصفا</div>
-            <div class="place-sub">As-Safa Hill</div>
+            <div class="place-sub">Al-Safa Hill</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4255, 39.8282)">
+            <div class="icon-box">🏁</div>
+            <div class="place-name">جبل المروة</div>
+            <div class="place-sub">Al-Marwah Hill</div>
         </div>
     </div>
 
     <div class="section-title">🚪 <span data-ar="الأبواب والأدوار" data-en="Gates & Floors">الأبواب والأدوار</span></div>
     <div class="grid">
-        <div class="place-card" onclick="openGMap(21.4204, 39.8257)">
-            <div class="icon-circle">1️⃣</div>
+        <div class="place-card" onclick="openMap(21.4204, 39.8257)">
+            <div class="icon-box">1️⃣</div>
             <div class="place-name">باب الملك عبدالعزيز</div>
-            <div class="place-sub">Gate No. 1</div>
+            <div class="place-sub">Gate 1</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4214, 39.8235)">
-            <div class="icon-circle">7️⃣9️⃣</div>
+        <div class="place-card" onclick="openMap(21.4214, 39.8235)">
+            <div class="icon-box">7️⃣9️⃣</div>
             <div class="place-name">باب الملك فهد</div>
-            <div class="place-sub">Gate No. 79</div>
+            <div class="place-sub">Gate 79</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4246, 39.8263)">
-            <div class="icon-circle">4️⃣5️⃣</div>
+        <div class="place-card" onclick="openMap(21.4237, 39.8248)">
+            <div class="icon-box">6️⃣2️⃣</div>
+            <div class="place-name">باب العمرة</div>
+            <div class="place-sub">Gate 62</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4246, 39.8263)">
+            <div class="icon-box">4️⃣5️⃣</div>
             <div class="place-name">باب الفتح</div>
-            <div class="place-sub">Al-Fath Gate</div>
+            <div class="place-sub">Gate 45</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4220, 39.8230)">
-            <div class="icon-circle">⬆️</div>
-            <div class="place-name">مصليات الدور الأول</div>
-            <div class="place-sub">First Floor Prayers</div>
+        <div class="place-card" onclick="openMap(21.4220, 39.8230)">
+            <div class="icon-box">🏛️</div>
+            <div class="place-name">الدور الأول (داخلي)</div>
+            <div class="place-sub">First Floor Inside</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4230, 39.8240)">
+            <div class="icon-box">🔝</div>
+            <div class="place-name">سطح الحرم</div>
+            <div class="place-sub">Haram Roof</div>
         </div>
     </div>
 
-    <div class="section-title">🆘 <span data-ar="المساعدة والخدمات" data-en="Help & Services">المساعدة والخدمات</span></div>
+    <div class="section-title">🆘 <span data-ar="الخدمات والمساعدة" data-en="Services & Help">الخدمات والمساعدة</span></div>
     <div class="grid">
-        <div class="place-card" onclick="openGMap(21.4235, 39.8278)">
-            <div class="icon-circle">♿</div>
-            <div class="place-name">عربات كبار السن</div>
-            <div class="place-sub">Wheelchairs</div>
+        <div class="place-card" onclick="openMap(21.4235, 39.8278)">
+            <div class="icon-box">♿</div>
+            <div class="place-name">سيارات السعي (عربات)</div>
+            <div class="place-sub">Saei Wheelchairs</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4240, 39.8285)">
-            <div class="icon-circle">🎒</div>
-            <div class="place-name">مركز المفقودات</div>
+        <div class="place-card" onclick="openMap(21.4242, 39.8272)">
+            <div class="icon-box">⚡</div>
+            <div class="place-name">العربات الكهربائية</div>
+            <div class="place-sub">Electric Scooters</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4240, 39.8285)">
+            <div class="icon-box">🎒</div>
+            <div class="place-name">مكتب المفقودات</div>
             <div class="place-sub">Lost & Found</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4228, 39.8260)">
-            <div class="icon-circle">💧</div>
-            <div class="place-name">مشربيات زمزم</div>
+        <div class="place-card" onclick="openMap(21.4228, 39.8260)">
+            <div class="icon-box">💧</div>
+            <div class="place-name">زمزم (نقاط شرب)</div>
             <div class="place-sub">Zamzam Water</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4245, 39.8305)">
-            <div class="icon-circle">🚻</div>
-            <div class="place-name">دورات مياه (الساحات)</div>
-            <div class="place-sub">Toilets & Wudu</div>
+        <div class="place-card" onclick="openMap(21.4245, 39.8305)">
+            <div class="icon-box">🚻</div>
+            <div class="place-name">دورات مياه القشاشية</div>
+            <div class="place-sub">Toilets (East)</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4210, 39.8210)">
+            <div class="icon-box">🚻</div>
+            <div class="place-name">دورات مياه الشبيكة</div>
+            <div class="place-sub">Toilets (West)</div>
         </div>
     </div>
 
-    <div class="section-title">🚌 <span data-ar="النقل والمواقف" data-en="Transport & Parking">النقل والمواقف</span></div>
+    <div class="section-title">🚗 <span data-ar="المواقف والمطاعم" data-en="Parking & Food">المواقف والمطاعم</span></div>
     <div class="grid">
-        <div class="place-card" onclick="openGMap(21.4180, 39.8310)">
-            <div class="icon-circle">🚌</div>
-            <div class="place-name">مواقف باصات أجياد</div>
-            <div class="place-sub">Ajyad Bus Station</div>
+        <div class="place-card" onclick="openMap(21.4180, 39.8310)">
+            <div class="icon-box">🚌</div>
+            <div class="place-name">محطة باصات أجياد</div>
+            <div class="place-sub">Ajyad Bus Hub</div>
         </div>
-        <div class="place-card" onclick="openGMap(21.4175, 39.8295)">
-            <div class="icon-circle">🅿️</div>
-            <div class="place-name">مواقف سيارات كدي</div>
+        <div class="place-card" onclick="openMap(21.4175, 39.8295)">
+            <div class="icon-box">🅿️</div>
+            <div class="place-name">مواقف كدي الخارجية</div>
             <div class="place-sub">Kudai Parking</div>
         </div>
+        <div class="place-card" onclick="openMap(21.4188, 39.8256)">
+            <div class="icon-box">🍔</div>
+            <div class="place-name">مطاعم البرج (وقف)</div>
+            <div class="place-sub">Clock Tower Food</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4210, 39.8200)">
+            <div class="icon-box">🍗</div>
+            <div class="place-name">مطاعم جبل عمر</div>
+            <div class="place-sub">Jabal Omar Food</div>
+        </div>
     </div>
 
-    <div class="section-title">🍴 <span data-ar="الطعام والتسوق" data-en="Food & Shopping">الطعام والتسوق</span></div>
-    <div class="grid">
-        <div class="place-card" onclick="openGMap(21.4188, 39.8256)">
-            <div class="icon-circle">🍔</div>
-            <div class="place-name">مجمع مطاعم البرج</div>
-            <div class="place-sub">Clock Tower Food Court</div>
-        </div>
-        <div class="place-card" onclick="openGMap(21.4210, 39.8200)">
-            <div class="icon-circle">🍗</div>
-            <div class="place-name">مطعم البيك (جبل عمر)</div>
-            <div class="place-sub">Al-Baik Restaurant</div>
-        </div>
-    </div>
 </div>
 
 <footer>
-    Designed for Mohamed Al-Rashidi &copy; 2026<br>
-    Makkah Holy Mosque Navigation System
+    دليل الحرم الذكي - جميع الحقوق محفوظة لمحمد الرشيدي 2026<br>
+    Haram Guide - Automated Multilingual Interface
 </footer>
 
 <script>
-    // وظيفة فتح خرائط جوجل
-    function openGMap(lat, lng) {
+    function openMap(lat, lng) {
+        // فتح الرابط في تطبيق جوجل ماب بوضع المشي
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
         window.open(url, '_blank');
     }
 
-    // وظيفة التعرف على لغة المتصفح وتبديل النصوص
-    function checkLanguage() {
-        const userLang = navigator.language || navigator.userLanguage;
-        if (!userLang.startsWith('ar')) {
+    // التعرف التلقائي على لغة الموبايل
+    function setLanguage() {
+        const lang = navigator.language || navigator.userLanguage;
+        if (!lang.startsWith('ar')) {
             document.documentElement.dir = "ltr";
-            document.documentElement.lang = "en";
             document.querySelectorAll('[data-en]').forEach(el => {
                 el.innerText = el.getAttribute('data-en');
             });
-            document.getElementById('title').innerText = "Haram Universal Guide";
-            document.getElementById('subtitle').innerText = "Navigate Holy Makkah Easily";
+            document.getElementById('mainTitle').innerText = "Haram Smart Guide";
+            document.getElementById('mainSub').innerText = "Your Universal Companion";
         }
     }
-
-    window.onload = checkLanguage;
+    window.onload = setLanguage;
 </script>
 
 </body>
