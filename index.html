@@ -3,40 +3,59 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الحرم المكي - الملاحة</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<title>الحرم المكي - الملاحة التفاعلية</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Leaflet Routing Machine CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+
 <style>
-  body { margin:0; font-family: 'Segoe UI', sans-serif; }
-  #map { height: 100vh; width: 100%; }
-  .leaflet-popup-content { font-size: 16px; }
-  #searchBox {
-    position: absolute;
-    top: 10px; left: 50%; transform: translateX(-50%);
-    z-index: 1000; width: 300px;
-  }
-  #searchInput {
-    width: 100%; padding: 8px; font-size: 16px; border-radius: 5px; border: 1px solid #999;
-  }
+body { margin:0; font-family: 'Segoe UI', sans-serif; }
+#map { height: 100vh; width: 100%; }
+#controls {
+  position: absolute;
+  top: 10px; left: 50%; transform: translateX(-50%);
+  z-index: 1000; background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+#controls select {
+  padding: 6px; font-size: 16px; margin: 5px;
+}
+#controls button {
+  padding: 6px 12px; font-size: 16px; margin: 5px; cursor: pointer; border-radius:5px;
+}
 </style>
 </head>
 <body>
 
-<div id="searchBox">
-  <input type="text" id="searchInput" placeholder="ابحث عن بوابة أو حمام أو مطعم...">
+<div id="controls">
+  <select id="startSelect">
+    <option value="">اختر نقطة البداية</option>
+  </select>
+  <select id="endSelect">
+    <option value="">اختر نقطة النهاية</option>
+  </select>
+  <button id="routeBtn">اظهار المسار</button>
 </div>
+
 <div id="map"></div>
 
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet Routing Machine JS -->
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
 <script>
 // إنشاء الخريطة
 var map = L.map('map').setView([21.4225, 39.8262], 17);
 
-// إضافة طبقة الخرائط الأساسية
+// إضافة خرائط OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap',
 }).addTo(map);
 
-// نقاط الحرم
+// نقاط الحرم المهمة
 var points = [
   {name:"الكعبة المشرفة", coords:[21.422487, 39.826206]},
   {name:"مقام إبراهيم", coords:[21.4226, 39.8263]},
@@ -54,25 +73,63 @@ var points = [
   {name:"مجمع الحمامات الجنوبية", coords:[21.4195, 39.8260]}
 ];
 
-// إنشاء علامات
+// إضافة نقاط على الخريطة وملء القوائم
 var markers = [];
-points.forEach(function(p){
+var startSelect = document.getElementById('startSelect');
+var endSelect = document.getElementById('endSelect');
+
+points.forEach(function(p, index){
   var marker = L.marker(p.coords).addTo(map).bindPopup("<b>"+p.name+"</b>");
-  markers.push({marker:marker, name:p.name});
+  markers.push({marker:marker, name:p.name, coords:p.coords});
+
+  var optionStart = document.createElement('option');
+  optionStart.value = index;
+  optionStart.text = p.name;
+  startSelect.appendChild(optionStart);
+
+  var optionEnd = document.createElement('option');
+  optionEnd.value = index;
+  optionEnd.text = p.name;
+  endSelect.appendChild(optionEnd);
 });
 
-// البحث في النقاط
-var input = document.getElementById('searchInput');
-input.addEventListener('input', function(){
-  var val = input.value.toLowerCase();
-  markers.forEach(function(m){
-    if(m.name.toLowerCase().includes(val)){
-      map.setView(m.marker.getLatLng(), 18);
-      m.marker.openPopup();
-    }
+// Routing Machine
+var control = null;
+
+// زر إظهار المسار
+document.getElementById('routeBtn').addEventListener('click', function(){
+  var startIndex = startSelect.value;
+  var endIndex = endSelect.value;
+  if(startIndex === "" || endIndex === ""){
+    alert("اختر نقطة البداية والنهاية");
+    return;
+  }
+  var start = markers[startIndex].coords;
+  var end = markers[endIndex].coords;
+
+  if(control) {
+    map.removeControl(control);
+  }
+
+  control = L.Routing.control({
+    waypoints: [L.latLng(start[0], start[1]), L.latLng(end[0], end[1])],
+    routeWhileDragging: false,
+    show: true,
+    addWaypoints: false,
+    draggableWaypoints: false,
+    fitSelectedRoutes: true
+  }).addTo(map);
+});
+
+// تحديد موقع المستخدم
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(function(position){
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    var userMarker = L.marker([lat, lng], {icon:L.icon({iconUrl:"https://cdn-icons-png.flaticon.com/512/64/64113.png", iconSize:[30,30]})}).addTo(map).bindPopup("موقعك الحالي").openPopup();
+    map.setView([lat, lng], 17);
   });
-});
+}
 </script>
-
 </body>
 </html>
