@@ -51,8 +51,8 @@
 <body>
 
 <div class="header">
-    <h1 id="mainTitle">مرشد الحرم المكي الشامل</h1>
-    <p id="mainSub">دليل الخدمات والمواقع اللحظي</p>
+    <h1>مرشد الحرم المكي الشامل</h1>
+    <p>دليل الخدمات والمواقع اللحظي - إشراف محمد الرشيدي</p>
 </div>
 
 <div class="container">
@@ -64,10 +64,20 @@
             <div class="place-name">صحن الكعبة (المطاف)</div>
             <div class="place-sub">Mataf Area</div>
         </div>
+        <div class="place-card" onclick="openMap(21.4221, 39.8266)">
+            <div class="icon-box">⚫</div>
+            <div class="place-name">الحجر الأسود</div>
+            <div class="place-sub">The Black Stone</div>
+        </div>
         <div class="place-card" onclick="openMap(21.4215, 39.8275)">
             <div class="icon-box">⛰️</div>
             <div class="place-name">جبل الصفا</div>
             <div class="place-sub">Al-Safa Hill</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4255, 39.8282)">
+            <div class="icon-box">🏁</div>
+            <div class="place-name">جبل المروة</div>
+            <div class="place-sub">Al-Marwah Hill</div>
         </div>
     </div>
 
@@ -81,21 +91,31 @@
         <div class="place-card" onclick="openMap(21.4214, 39.8235)">
             <div class="icon-box">7️⃣9️⃣</div>
             <div class="place-name">باب الملك فهد</div>
-            <div class="place-desc">المدخل الغربي</div>
+            <div class="place-desc">الجهة الغربية</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4260, 39.8245)">
+            <div class="icon-box">🔟0️⃣</div>
+            <div class="place-name">باب الملك عبدالله</div>
+            <div class="place-desc">التوسعة الثالثة</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4215, 39.8240)">
+            <div class="icon-box">⚡</div>
+            <div class="place-name">سلالم الأدوار العليا</div>
+            <div class="place-desc">Escalators</div>
         </div>
     </div>
 
-    <div class="section-title">🍴 <span>مطاعم قريبة</span></div>
+    <div class="section-title">🚺 <span>مصليات النساء</span></div>
     <div class="grid">
-        <div class="place-card" onclick="openMap(21.4210, 39.8200)">
-            <div class="icon-box">🍔</div>
-            <div class="place-name">مطعم البيك</div>
-            <div class="place-desc">وجبات سريعة - جبل عمر</div>
+        <div class="place-card" onclick="openMap(21.4223, 39.8258)">
+            <div class="icon-box">🚺</div>
+            <div class="place-name">مصلى النساء (الصحن)</div>
+            <div class="place-sub">Women Area (Mataf)</div>
         </div>
-        <div class="place-card" onclick="openMap(21.4188, 39.8256)">
+        <div class="place-card" onclick="openMap(21.4235, 39.8250)">
             <div class="icon-box">🏢</div>
-            <div class="place-name">أبراج البيت</div>
-            <div class="place-desc">صالة مطاعم برج الساعة</div>
+            <div class="place-name">مصلى النساء (الأدوار)</div>
+            <div class="place-sub">Women Area (Floors)</div>
         </div>
     </div>
 
@@ -104,17 +124,31 @@
         <div class="place-card" onclick="openMap(21.4202, 39.8262)">
             <div class="icon-box">♿</div>
             <div class="place-name">عربات كبار السن</div>
-            <div class="place-sub">نقطة أجياد (مجانية)</div>
+            <div class="place-sub">توزيع مجاني (أجياد)</div>
         </div>
         <div class="place-card" onclick="openMap(21.4235, 39.8245)">
             <div class="icon-box">⚡</div>
             <div class="place-name">العربات الكهربائية</div>
             <div class="place-sub">جسر الشبيكة</div>
         </div>
+        <div class="place-card" onclick="openMap(21.4240, 39.8285)">
+            <div class="icon-box">🎒</div>
+            <div class="place-name">مكتب المفقودات</div>
+            <div class="place-sub">Lost & Found</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4228, 39.8260)">
+            <div class="icon-box">💧</div>
+            <div class="place-name">زمزم (نقاط شرب)</div>
+            <div class="place-sub">Zamzam Water</div>
+        </div>
+    </div>
+
+    <div class="section-title">🚻 <span>الوضوء والحلاقة</span></div>
+    <div class="grid">
         <div class="place-card" onclick="openMap(21.4245, 39.8305)">
             <div class="icon-box">🚻</div>
-            <div class="place-name">دورات المياه</div>
-            <div class="place-sub">ساحة القشاشية</div>
+            <div class="place-name">مواضي القشاشية</div>
+            <div class="place-desc">دورات مياه شرقاً</div>
         </div>
         <div class="place-card" onclick="openMap(21.4258, 39.8285)">
             <div class="icon-box">✂️</div>
@@ -123,15 +157,30 @@
         </div>
     </div>
 
+    <div class="section-title">🍴 <span>المطاعم والخدمات</span></div>
+    <div class="grid">
+        <div class="place-card" onclick="openMap(21.4210, 39.8200)">
+            <div class="icon-box">🍔</div>
+            <div class="place-name">مطعم البيك</div>
+            <div class="place-desc">فرع جبل عمر</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4188, 39.8256)">
+            <div class="icon-box">🏢</div>
+            <div class="place-name">أبراج البيت</div>
+            <div class="place-desc">صالة مطاعم الساعة</div>
+        </div>
+    </div>
+
 </div>
 
 <footer>
-    تم التصميم بواسطة محمد الرشيدي © 2026
+    تم التصميم بواسطة محمد الرشيدي © 2026<br>
+    Haram Comprehensive Guide
 </footer>
 
 <script>
     function openMap(lat, lng) {
-        // تم تصحيح الرابط ليعمل فوراً على تطبيق الخرائط
+        // تم استخدام الرابط الرسمي المحدث لضمان الدقة في فتح الاتجاهات
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
         window.open(url, '_blank');
     }
