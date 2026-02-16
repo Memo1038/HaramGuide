@@ -7,74 +7,96 @@
     <style>
         :root { --gold: #c69c6d; --green: #1b5e20; --bg: #f4f7f4; --red: #d32f2f; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #333; padding-bottom: 80px; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #333; padding-top: 140px; padding-bottom: 50px; }
 
-        /* الهيدر المطور */
+        /* الهيدر والشريط المثبت */
+        .fixed-top { position: fixed; top: 0; left: 0; right: 0; z-index: 2000; background: var(--bg); }
+        
         .header { 
             background: linear-gradient(135deg, var(--green), #0a3d0e); 
-            color: white; padding: 30px 20px; text-align: center;
-            border-bottom: 5px solid var(--gold); border-radius: 0 0 40px 40px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            color: white; padding: 15px; text-align: center;
+            border-bottom: 3px solid var(--gold);
         }
+        .header h1 { margin: 0; font-size: 18px; }
 
-        /* شريط الأدوات الذكي */
         .smart-tools {
             display: flex; justify-content: space-around; background: white;
-            margin: -25px 15px 10px; padding: 15px; border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .tool-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; font-size: 11px; font-weight: bold; color: var(--green); }
-        .tool-item icon { font-size: 22px; margin-bottom: 5px; }
+        .tool-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; font-size: 10px; font-weight: bold; color: var(--green); flex: 1; }
+        .tool-item span.icon { font-size: 20px; margin-bottom: 3px; }
 
         .container { padding: 15px; max-width: 800px; margin: auto; }
-        .section-title { display: flex; align-items: center; gap: 10px; margin: 25px 0 10px; color: var(--green); font-weight: bold; border-right: 5px solid var(--gold); padding-right: 12px; }
+        .section-title { display: flex; align-items: center; gap: 10px; margin: 25px 0 12px; color: var(--green); font-weight: bold; font-size: 1.1em; border-right: 5px solid var(--gold); padding-right: 12px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         .place-card {
             background: white; border-radius: 18px; padding: 15px;
             display: flex; flex-direction: column; align-items: center; text-align: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #eef2ee;
+            cursor: pointer; transition: 0.3s;
         }
-        .place-card:active { transform: scale(0.95); background: #f9f9f9; }
-        .icon-box { width: 50px; height: 50px; background: #f0f7f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 10px; }
+        .place-card:active { transform: scale(0.92); background: #f9f9f9; }
+        .icon-box { width: 50px; height: 50px; background: #f0f7f0; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 10px; }
         .place-name { font-size: 13px; font-weight: 700; color: #2c3e50; }
-        .place-desc { font-size: 10px; color: var(--gold); margin-top: 2px; }
+        .place-desc { font-size: 10px; color: var(--gold); font-weight: bold; margin-top: 4px; }
 
-        /* واجهة الـ AI Guide */
-        #ai-modal {
-            position: fixed; bottom: -100%; left: 0; right: 0; background: white; 
-            z-index: 2000; padding: 20px; border-radius: 30px 30px 0 0;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.2); transition: 0.4s;
-        }
+        /* AI Modal */
+        #ai-modal { position: fixed; bottom: -100%; left: 0; right: 0; background: white; z-index: 3000; padding: 20px; border-radius: 25px 25px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.3); transition: 0.4s; }
         #ai-modal.active { bottom: 0; }
-        .ai-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 10px; }
+        .ai-input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin: 10px 0; font-size: 16px; }
 
-        .sos-btn { color: var(--red) !important; }
+        footer { text-align: center; padding: 20px; color: #999; font-size: 11px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>مرشد الحرم الشامل</h1>
-    <p>Haram Comprehensive Guide</p>
-</div>
-
-<div class="smart-tools">
-    <div class="tool-item" onclick="saveLocation()">
-        <icon>📍</icon> <span id="saveText">حفظ موقعي</span>
+<div class="fixed-top">
+    <div class="header">
+        <h1>مرشد الحرم الشامل | محمد الرشيدي</h1>
     </div>
-    <div class="tool-item" onclick="openCrowds()">
-        <icon>📊</icon> <span>حالة الزحام</span>
-    </div>
-    <div class="tool-item" onclick="toggleAI()">
-        <icon>🤖</icon> <span>تحدث مع المرشد</span>
-    </div>
-    <div class="tool-item sos-btn" onclick="triggerSOS()">
-        <icon>🆘</icon> <span>طوارئ</span>
+    <div class="smart-tools">
+        <div class="tool-item" onclick="saveMySpot()">
+            <span class="icon">📍</span><span id="spotText">حفظ موقعي</span>
+        </div>
+        <div class="tool-item" onclick="window.open('https://www.google.com/maps/@21.4225,39.8262,17z/data=!5m1!1e1')">
+            <span class="icon">📊</span><span>حالة الزحام</span>
+        </div>
+        <div class="tool-item" onclick="toggleAI()">
+            <span class="icon">🤖</span><span>تحدث مع المرشد</span>
+        </div>
+        <div class="tool-item" onclick="window.location.href='tel:911'" style="color:var(--red)">
+            <span class="icon">🆘</span><span>الطوارئ</span>
+        </div>
     </div>
 </div>
 
 <div class="container">
+
+    <div class="section-title">🕋 <span>المشاعر والمصليات</span></div>
+    <div class="grid">
+        <div class="place-card" onclick="openMap(21.4225, 39.8262)">
+            <div class="icon-box">🕋</div>
+            <div class="place-name">صحن الكعبة (المطاف)</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4221, 39.8266)">
+            <div class="icon-box">⚫</div>
+            <div class="place-name">الحجر الأسود</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.42252, 39.8263)">
+            <div class="icon-box">📍</div>
+            <div class="place-name">مقام إبراهيم</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4215, 39.8275)">
+            <div class="icon-box">⛰️</div>
+            <div class="place-name">جبل الصفا</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4255, 39.8282)">
+            <div class="icon-box">🏁</div>
+            <div class="place-name">جبل المروة</div>
+        </div>
+    </div>
+
     <div class="section-title">🚪 <span>البوابات والسلالم</span></div>
     <div class="grid">
         <div class="place-card" onclick="openMap(21.4204, 39.8257)">
@@ -82,103 +104,125 @@
             <div class="place-name">باب الملك عبدالعزيز</div>
             <div class="place-desc">المدخل الرئيسي</div>
         </div>
-        <div class="place-card" onclick="openMap(21.4214, 39.8235)">
-            <div class="icon-box">7️⃣9️⃣</div>
-            <div class="place-name">باب الملك فهد</div>
-            <div class="place-desc">المدخل الغربي</div>
+        <div class="place-card" onclick="openMap(21.4200, 39.8261)">
+            <div class="icon-box">3️⃣</div>
+            <div class="place-name">باب أجياد</div>
+            <div class="place-desc">جهة أبراج الساعة</div>
         </div>
-        <div class="place-card" onclick="openMap(21.4260, 39.8245)">
-            <div class="icon-box">1️⃣0️⃣0️⃣</div>
-            <div class="place-name">باب الملك عبدالله</div>
-            <div class="place-desc">التوسعة الحديثة</div>
+        <div class="place-card" onclick="openMap(21.4208, 39.8270)">
+            <div class="icon-box">6️⃣</div>
+            <div class="place-name">باب بلال</div>
+            <div class="place-desc">الجهة الجنوبية</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4210, 39.8273)">
+            <div class="icon-box">9️⃣</div>
+            <div class="place-name">باب حنين</div>
+            <div class="place-desc">جنوب الحرم</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4211, 39.8274)">
+            <div class="icon-box">🔟</div>
+            <div class="place-name">باب إسماعيل</div>
+            <div class="place-desc">جنوب الحرم</div>
         </div>
         <div class="place-card" onclick="openMap(21.4212, 39.8270)">
             <div class="icon-box">1️⃣1️⃣</div>
             <div class="place-name">باب الصفا</div>
             <div class="place-desc">جهة المسعى</div>
         </div>
+        <div class="place-card" onclick="openMap(21.4246, 39.8263)">
+            <div class="icon-box">4️⃣5️⃣</div>
+            <div class="place-name">باب الفتح</div>
+            <div class="place-desc">الجهة الشمالية</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4237, 39.8248)">
+            <div class="icon-box">6️⃣2️⃣</div>
+            <div class="place-name">باب العمرة</div>
+            <div class="place-desc">مخصص للمعتمرين</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4214, 39.8235)">
+            <div class="icon-box">7️⃣9️⃣</div>
+            <div class="place-name">باب الملك فهد</div>
+            <div class="place-desc">المدخل الغربي</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4260, 39.8245)">
+            <div class="icon-box">💯</div>
+            <div class="place-name">باب الملك عبدالله</div>
+            <div class="place-desc">التوسعة الحديثة</div>
+        </div>
     </div>
 
-    <div class="section-title">⚙️ <span>خدمات المعتمرين</span></div>
+    <div class="section-title">🚺 <span>مصليات النساء</span></div>
     <div class="grid">
-        <div class="place-card" onclick="openMap(21.4235, 39.8278)">
-            <div class="icon-box">♿</div>
-            <div class="place-name">سيارات السعي</div>
-            <div class="place-desc">Wheelchairs</div>
+        <div class="place-card" onclick="openMap(21.4223, 39.8258)">
+            <div class="icon-box">🚺</div>
+            <div class="place-name">مصلى النساء (الصحن)</div>
         </div>
-        <div class="place-card" onclick="openMap(21.4258, 39.8285)">
-            <div class="icon-box">✂️</div>
-            <div class="place-name">الحلاقة والتحلل</div>
-            <div class="place-desc">Barbers Area</div>
+        <div class="place-card" onclick="openMap(21.4235, 39.8250)">
+            <div class="icon-box">🏢</div>
+            <div class="place-name">مصلى النساء (الأدوار)</div>
         </div>
     </div>
+
+    <div class="section-title">✂️ <span>التحلل والحلاقة</span></div>
+    <div class="grid">
+        <div class="place-card" onclick="openMap(21.4258, 39.8285)">
+            <div class="icon-box">✂️</div>
+            <div class="place-name">حلاقة (المروة)</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4175, 39.8290)">
+            <div class="icon-box">💈</div>
+            <div class="place-name">حلاقة مجانية (كدي)</div>
+        </div>
+    </div>
+
 </div>
 
 <div id="ai-modal">
-    <div style="display:flex; justify-content:space-between;">
-        <strong>🤖 المرشد الذكي (AI Guide)</strong>
-        <span onclick="toggleAI()" style="cursor:pointer">✖</span>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>🤖 مساعد الحرم الذكي</strong>
+        <span onclick="toggleAI()" style="cursor:pointer; font-size:24px;">×</span>
     </div>
-    <p style="font-size:12px; color:#666;">اسأل بأي لغة (عربي، English، Urdu...)</p>
-    <input type="text" class="ai-input" placeholder="مثلاً: أين أجد أقرب حمام؟" id="aiQuery">
-    <button onclick="aiProcess()" style="width:100%; background:var(--green); color:white; border:none; padding:10px; border-radius:10px; margin-top:10px;">إرسال</button>
-    <div id="aiResponse" style="margin-top:10px; font-size:13px; color:var(--green); font-weight:bold;"></div>
+    <input type="text" id="aiInput" class="ai-input" placeholder="اسأل عن: حمامات، كراسي، أبواب...">
+    <button onclick="askAI()" style="width:100%; padding:12px; background:var(--green); color:white; border:none; border-radius:10px;">إرسال</button>
+    <p id="aiOutput" style="margin-top:15px; font-size:14px; color:var(--green); min-height:30px;"></p>
 </div>
 
-<footer>
-    تم التصميم بواسطة محمد الرشيدي © 2026<br>
-    نسخة Offline تدعم الوصول السريع
-</footer>
-
 <script>
-    // 1. فتح الخرائط
     function openMap(lat, lng) {
         window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`, '_blank');
     }
 
-    // 2. حفظ موقع السيارة
-    function saveLocation() {
-        navigator.geolocation.getCurrentPosition(pos => {
-            const myLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            localStorage.setItem('mySpot', JSON.stringify(myLoc));
-            document.getElementById('saveText').innerText = "تم حفظ موقعك ✅";
-            alert("تم حفظ موقع سيارتك/باصك بنجاح!");
-        });
-    }
-
-    // 3. حالة الزحام اللحظية
-    function openCrowds() {
-        window.open(`https://www.google.com/maps/@21.4225,39.8262,17z/data=!5m1!1e1`, '_blank');
-    }
-
-    // 4. وضع الطوارئ
-    function triggerSOS() {
-        if(confirm("هل تريد الاتصال بالطوارئ (911) وتحديد أقرب نقطة إسعاف؟")) {
-            window.location.href = "tel:911";
-            openMap(21.4225, 39.8262); // يوجه لأقرب نقطة طبية افتراضياً
-        }
-    }
-
-    // 5. المرشد الذكي (AI Integration)
     function toggleAI() { document.getElementById('ai-modal').classList.toggle('active'); }
-    
-    function aiProcess() {
-        const query = document.getElementById('aiQuery').value.toLowerCase();
-        const res = document.getElementById('aiResponse');
-        if(query.includes('حمام') || query.includes('toilet') || query.includes('wudu')) {
-            res.innerHTML = "توجد أقرب حمامات في ساحة القشاشية وساحة الشبيكة. هل تريد التوجيه؟";
-        } else if(query.includes('كرسي') || query.includes('wheelchair')) {
-            res.innerHTML = "عربات كبار السن متوفرة في الميزانين ودور السطح وجهة باب أجياد.";
-        } else {
-            res.innerHTML = "جاري البحث في قاعدة بيانات الحرم... يرجى التوجه لأقرب موظف أمن لخدمتكم بشكل أدق.";
+
+    function askAI() {
+        const input = document.getElementById('aiInput').value.toLowerCase();
+        const out = document.getElementById('aiOutput');
+        if(input.includes('حمام') || input.includes('toilet')) out.innerText = "أقرب دورات مياه تقع في ساحات القشاشية (شرق) والشبيكة (غرب).";
+        else if(input.includes('كرسي') || input.includes('wheelchair')) out.innerText = "العربات متوفرة في دور الميزانين وعند جسر أجياد.";
+        else if(input.includes('حلاق') || input.includes('barber')) out.innerText = "توجد محالق في الساحة الشرقية خارج باب المروة.";
+        else out.innerText = "عذراً، جرب كلمات مثل (باب، صلاة، ماء، عربات).";
+    }
+
+    function saveMySpot() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                const myLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                localStorage.setItem('userParkedSpot', JSON.stringify(myLoc));
+                document.getElementById('spotText').innerText = "تم الحفظ ✅";
+                alert("تم حفظ موقعك بنجاح! يمكنك الآن الذهاب للحرم.");
+            }, () => alert("يرجى تفعيل الـ GPS والسماح للمتصفح بالوصول لموقعك."));
         }
     }
 
-    // Offline Support (Simple Service Worker Concept)
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            console.log("مرشد الحرم جاهز للعمل بدون إنترنت (بيانات المواقع محفوظة)");
-        });
+    // التحقق من وجود موقع محفوظ عند التشغيل
+    window.onload = function() {
+        if(localStorage.getItem('userParkedSpot')) {
+            document.getElementById('spotText').innerText = "عد لموقعي 🚗";
+            document.getElementById('spotText').parentElement.onclick = function() {
+                const loc = JSON.parse(localStorage.getItem('userParkedSpot'));
+                openMap(loc.lat, loc.lng);
+            };
+        }
     }
 </script>
 
