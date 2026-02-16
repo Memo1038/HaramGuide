@@ -1,86 +1,123 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نموذج خريطة المسجد الحرام</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دليل الحرم الذكي | محمد الرشيدي</title>
+    <style>
+        :root { --gold: #c69c6d; --green: #1b5e20; --bg: #f4f7f4; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); color: #333; padding-bottom: 50px; }
 
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
- integrity="sha256-sA+uChXtYfTVjX8x9Ck2w6JQ0R3lGi5rX3GZ0z9gALQ=" crossorigin=""/>
+        /* نافذة الخريطة التفاعلية */
+        .map-container {
+            position: sticky; top: 0; z-index: 1000;
+            width: 100%; height: 250px;
+            background: #eee; border-bottom: 4px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        iframe { width: 100%; height: 100%; border: none; }
 
-<style>
-  body { margin:0; padding:0; font-family: Arial, sans-serif; }
-  #map { height: 100vh; width: 100vw; }
-  .custom-popup { text-align:right; font-size:16px; }
-  .btn { padding:5px 10px; margin-top:5px; background:#4A90E2; color:white; border:none; cursor:pointer; border-radius:4px; }
-  .btn:hover { background:#357ABD; }
-</style>
+        .header { 
+            background: linear-gradient(135deg, var(--green), #0a3d0e); 
+            color: white; padding: 20px; text-align: center;
+        }
+
+        .container { padding: 15px; max-width: 800px; margin: auto; }
+        .section-title { 
+            display: flex; align-items: center; gap: 10px; margin: 20px 0 10px; 
+            color: var(--green); font-weight: bold; border-right: 5px solid var(--gold); padding-right: 12px;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .place-card {
+            background: white; border-radius: 15px; padding: 12px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eef2ee;
+            cursor: pointer; transition: 0.2s;
+        }
+        .place-card:active { transform: scale(0.95); background: #f0f0f0; }
+        
+        .icon-box { font-size: 24px; margin-bottom: 5px; }
+        .place-name { font-size: 13px; font-weight: 700; color: #2c3e50; }
+
+        footer { text-align: center; margin-top: 30px; padding: 20px; color: #999; font-size: 11px; }
+    </style>
 </head>
 <body>
 
-<div id="map"></div>
+<div class="map-container" id="mapBox">
+    <iframe 
+        id="googleMap"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m13!1d3714.8690!2d39.8261!3d21.4225!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x15c204b74d32cf2d%3A0xc436c6499313d42!2z2KfZhNmF2LPYrNivINin2YTYrdix2KfZhQ!5e0!3m2!1sar!2ssa!4v1700000000000!5m2!1sar!2ssa" 
+        allowfullscreen="" loading="lazy">
+    </iframe>
+</div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
- integrity="sha256-o9N1j8w+9t0ZbW2u5OJuvGxR2o7jHJz7s6TP0hZjHDo=" crossorigin=""></script>
+<div class="header">
+    <h2 style="margin:0; font-size:18px;">مرشد الحرم الداخلي</h2>
+    <p style="margin:5px 0 0; font-size:12px;">إشراف محمد الرشيدي - تحديث الخريطة الحية</p>
+</div>
+
+<div class="container">
+
+    <div class="section-title">🕋 <span>المعالم الداخلية</span></div>
+    <div class="grid">
+        <div class="place-card" onclick="updateMap(21.4225, 39.8262)">
+            <div class="icon-box">🕋</div>
+            <div class="place-name">صحن الطواف</div>
+        </div>
+        <div class="place-card" onclick="updateMap(21.4226, 39.8263)">
+            <div class="icon-box">📍</div>
+            <div class="place-name">مقام إبراهيم</div>
+        </div>
+    </div>
+
+    <div class="section-title">🚪 <span>البوابات الرئيسية</span></div>
+    <div class="grid">
+        <div class="place-card" onclick="updateMap(21.4199, 39.8256)">
+            <div class="icon-box">1️⃣</div>
+            <div class="place-name">باب الملك عبدالعزيز</div>
+        </div>
+        <div class="place-card" onclick="updateMap(21.4220, 39.8237)">
+            <div class="icon-box">7️⃣9️⃣</div>
+            <div class="place-name">باب الملك فهد</div>
+        </div>
+        <div class="place-card" onclick="updateMap(21.4233, 39.8210)">
+            <div class="icon-box">🔟</div>
+            <div class="place-name">باب الملك عبدالله</div>
+        </div>
+    </div>
+
+    <div class="section-title">🚻 <span>الخدمات (داخلي)</span></div>
+    <div class="grid">
+        <div class="place-card" onclick="updateMap(21.4219, 39.8235)">
+            <div class="icon-box">🚻</div>
+            <div class="place-name">حمامات فهد</div>
+        </div>
+        <div class="place-card" onclick="updateMap(21.4195, 39.8260)">
+            <div class="icon-box">🚻</div>
+            <div class="place-name">حمامات أجياد</div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    دليل الحرم التفاعلي © 2026 - محمد الرشيدي
+</footer>
 
 <script>
-// ======== 1. إعداد الخريطة ========
-var map = L.map('map', {
-  crs: L.CRS.Simple, // لخريطة صورة داخلية
-  minZoom: -1,
-  maxZoom: 4
-});
+    function updateMap(lat, lng) {
+        // هذه الدالة تقوم بتحديث الخريطة في الأعلى عند الضغط على أي مكان
+        const newUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=19&output=embed`;
+        document.getElementById('googleMap').src = newUrl;
+        
+        // التمرير للأعلى لرؤية الخريطة
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
 
-// ======== 2. تحميل صورة خريطة المسجد الحرام ========
-// استخدم هنا أي صورة للخريطة الداخلية (يفضل PNG أو JPG)
-var bounds = [[0,0], [1000,1000]]; // إحداثيات الصورة (يمكن تعديلها حسب حجم الصورة)
-var image = L.imageOverlay('https://i.imgur.com/WlN4T1K.jpg', bounds).addTo(map);
-
-map.fitBounds(bounds);
-
-// ======== 3. نقاط الخدمات ========
-var services = [
-  {name: "دورة مياه النساء", coords: [150,200]},
-  {name: "دورة مياه الرجال", coords: [800,200]},
-  {name: "مصعد", coords: [500,500]},
-  {name: "بوابة رئيسية", coords: [100,900]},
-  {name: "نقطة زمزم", coords: [900,900]},
-  {name: "مكتب المفقودات", coords: [700,700]}
-];
-
-services.forEach(function(s) {
-  var marker = L.marker(s.coords).addTo(map)
-    .bindPopup(`<div class="custom-popup">
-      <strong>${s.name}</strong>
-      <br><button class="btn" onclick="navigateTo(${s.coords[0]}, ${s.coords[1]})">اذهب إلى هنا</button>
-    </div>`);
-});
-
-// ======== 4. تحديد موقع المستخدم يدوي ========
-var userMarker;
-function setUserLocation(lat, lng){
-  if(userMarker) map.removeLayer(userMarker);
-  userMarker = L.marker([lat,lng], {icon: L.icon({
-    iconUrl: 'https://i.imgur.com/4g7TZyf.png', // أيقونة المستخدم
-    iconSize: [30,30]
-  })}).addTo(map).bindPopup("موقعك الحالي").openPopup();
-  map.panTo([lat,lng]);
-}
-
-// مثال: ضع المستخدم في نقطة أولية
-setUserLocation(200,200);
-
-// ======== 5. وظيفة التوجيه خطوة بخطوة ========
-var routeLine;
-function navigateTo(lat, lng){
-  if(!userMarker) {
-    alert("حدد موقعك أولاً!");
-    return;
-  }
-  if(routeLine) map.removeLayer(routeLine);
-  var start = userMarker.getLatLng();
-  var end = L.latLng(lat,lng);
-  // رسم خط مستقيم كمحاكاة للتوجيه
-  routeLine = L.polyline([start,end], {color:'red', weight:4, dashArray
+</body>
+</html>
