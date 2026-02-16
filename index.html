@@ -32,7 +32,6 @@ button:hover { background:#00796B; }
 </div>
 
 <script>
-// عناصر الصفحة
 const messages = document.getElementById('messages');
 const input = document.getElementById('input');
 const sendBtn = document.getElementById('send');
@@ -56,42 +55,42 @@ function speak(text, lang='ar-SA'){
   }
 }
 
-// محاكاة الذكاء الصناعي (نسخة تجريبية)
-// لاحقًا يمكن ربطه بـ OpenAI API أو أي AI backend
+// إرسال النص إلى OpenAI API
 async function getAIResponse(userText){
-  // هنا يمكن إضافة استدعاء API خارجي للذكاء الصناعي
-  // مثال: OpenAI GPT API
-  // للنسخة التجريبية، نستخدم ردود جاهزة
+  const apiKey = "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";
 
-  userText = userText.toLowerCase();
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: "gpt-4",
+      messages: [{role: "user", content: userText}],
+      temperature: 0.5
+    })
+  });
 
-  // أمثلة الردود الذكية
-  if(userText.includes("أين أقرب حمام") || userText.includes("nearest bathroom")){
-    return "أقرب حمام يقع بالقرب من باب الملك عبدالعزيز، على يمينك عند الدخول.";
-  }
-  if(userText.includes("متى موعد الصلاة") || userText.includes("prayer time")){
-    return "وقت الصلاة القادمة هو الفجر الساعة 5:10 صباحًا.";
-  }
-  if(userText.includes("كم عدد الأشواط") || userText.includes("tawaf count")){
-    return "لقد أكملت 3 أشواط من الطواف، تبقى 4 أشواط.";
-  }
-  if(userText.includes("أذكار") || userText.includes("adhkar")){
-    return "يمكنك قراءة أذكار الطواف بعد كل شوط: سبحان الله، الحمد لله، الله أكبر.";
-  }
-
-  return "عذرًا، لم أفهم سؤالك. حاول إعادة صياغة السؤال أو جرب سؤال آخر.";
+  const data = await response.json();
+  return data.choices[0].message.content.trim();
 }
 
-// إرسال النص إلى الذكاء الاصطناعي
+// إرسال الرسالة
 async function sendMessage(){
   const text = input.value.trim();
   if(!text) return;
   addMessage(text, 'user');
   input.value = '';
 
-  const response = await getAIResponse(text);
-  addMessage(response, 'ai');
-  speak(response, text.match(/[a-zA-Z]/) ? 'en-US' : 'ar-SA');
+  try {
+    const response = await getAIResponse(text);
+    addMessage(response, 'ai');
+    speak(response, text.match(/[a-zA-Z]/) ? 'en-US' : 'ar-SA');
+  } catch(e){
+    addMessage("حدث خطأ في الاتصال بالذكاء الاصطناعي.", 'ai');
+    console.error(e);
+  }
 }
 
 // أحداث الأزرار
@@ -100,8 +99,9 @@ input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendMessage(); });
 
 // تسجيل الصوت
 let recognition;
-if('webkitSpeechRecognition' in window){
-  recognition = new webkitSpeechRecognition();
+if('SpeechRecognition' in window || 'webkitSpeechRecognition' in window){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
   recognition.lang = 'ar-SA';
   recognition.continuous = false;
   recognition.interimResults = false;
@@ -111,6 +111,7 @@ if('webkitSpeechRecognition' in window){
     input.value = speech;
     sendMessage();
   };
+  recognition.onerror = function(e){ console.error(e); alert("حدث خطأ أثناء تسجيل الصوت."); };
 }
 
 voiceBtn.addEventListener('click', ()=>{
@@ -120,7 +121,6 @@ voiceBtn.addEventListener('click', ()=>{
     alert("الميكروفون غير مدعوم في متصفحك.");
   }
 });
-
 </script>
 
 </body>
