@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دليل الحرم الشامل | محمد الرشيدي</title>
+    <title>مرشد الحرم الشامل | محمد الرشيدي</title>
     <style>
         :root { --gold: #c69c6d; --green: #1b5e20; --bg: #f4f7f4; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -52,7 +52,7 @@
 
 <div class="header">
     <h1>مرشد الحرم المكي الشامل</h1>
-    <p>دليل الخدمات والمواقع اللحظي - إشراف محمد الرشيدي</p>
+    <p>دليل المواقع اللحظي - إشراف محمد الرشيدي</p>
 </div>
 
 <div class="container">
@@ -68,6 +68,11 @@
             <div class="icon-box">⚫</div>
             <div class="place-name">الحجر الأسود</div>
             <div class="place-sub">The Black Stone</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.42252, 39.8263)">
+            <div class="icon-box">📍</div>
+            <div class="place-name">مقام إبراهيم</div>
+            <div class="place-sub">Maqam Ibrahim</div>
         </div>
         <div class="place-card" onclick="openMap(21.4215, 39.8275)">
             <div class="icon-box">⛰️</div>
@@ -88,15 +93,40 @@
             <div class="place-name">باب الملك عبدالعزيز</div>
             <div class="place-desc">المدخل الرئيسي</div>
         </div>
+        <div class="place-card" onclick="openMap(21.4200, 39.8261)">
+            <div class="icon-box">3️⃣</div>
+            <div class="place-name">باب أجياد</div>
+            <div class="place-desc">جهة أبراج الساعة</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4208, 39.8270)">
+            <div class="icon-box">6️⃣</div>
+            <div class="place-name">باب بلال</div>
+            <div class="place-desc">الجهة الجنوبية</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4212, 39.8270)">
+            <div class="icon-box">1️⃣1️⃣</div>
+            <div class="place-name">باب الصفا</div>
+            <div class="place-desc">جهة المسعى</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4246, 39.8263)">
+            <div class="icon-box">4️⃣5️⃣</div>
+            <div class="place-name">باب الفتح</div>
+            <div class="place-desc">الجهة الشمالية</div>
+        </div>
+        <div class="place-card" onclick="openMap(21.4237, 39.8248)">
+            <div class="icon-box">6️⃣2️⃣</div>
+            <div class="place-name">باب العمرة</div>
+            <div class="place-desc">مخصص للمعتمرين</div>
+        </div>
         <div class="place-card" onclick="openMap(21.4214, 39.8235)">
             <div class="icon-box">7️⃣9️⃣</div>
             <div class="place-name">باب الملك فهد</div>
-            <div class="place-desc">الجهة الغربية</div>
+            <div class="place-desc">المدخل الغربي</div>
         </div>
         <div class="place-card" onclick="openMap(21.4260, 39.8245)">
             <div class="icon-box">🔟0️⃣</div>
             <div class="place-name">باب الملك عبدالله</div>
-            <div class="place-desc">التوسعة الثالثة</div>
+            <div class="place-desc">التوسعة الحديثة</div>
         </div>
         <div class="place-card" onclick="openMap(21.4215, 39.8240)">
             <div class="icon-box">⚡</div>
@@ -119,12 +149,12 @@
         </div>
     </div>
 
-    <div class="section-title">🆘 <span>الخدمات والمساعدة</span></div>
+    <div class="section-title">🆘 <span>الخدمات والعربات</span></div>
     <div class="grid">
         <div class="place-card" onclick="openMap(21.4202, 39.8262)">
             <div class="icon-box">♿</div>
             <div class="place-name">عربات كبار السن</div>
-            <div class="place-sub">توزيع مجاني (أجياد)</div>
+            <div class="place-sub">نقطة أجياد (مجانية)</div>
         </div>
         <div class="place-card" onclick="openMap(21.4235, 39.8245)">
             <div class="icon-box">⚡</div>
@@ -155,6 +185,11 @@
             <div class="place-name">حلاقة المروة</div>
             <div class="place-sub">التحلل من الإحرام</div>
         </div>
+        <div class="place-card" onclick="openMap(21.4175, 39.8290)">
+            <div class="icon-box">💈</div>
+            <div class="place-name">حلاقة مجانية (كدي)</div>
+            <div class="place-sub">Free Barbers (Kudai)</div>
+        </div>
     </div>
 
     <div class="section-title">🍴 <span>المطاعم والخدمات</span></div>
@@ -175,12 +210,12 @@
 
 <footer>
     تم التصميم بواسطة محمد الرشيدي © 2026<br>
-    Haram Comprehensive Guide
+    Haram Comprehensive Guide - Universal Interface
 </footer>
 
 <script>
     function openMap(lat, lng) {
-        // تم استخدام الرابط الرسمي المحدث لضمان الدقة في فتح الاتجاهات
+        // الرابط المحدث لفتح جوجل مابس مباشرة بدقة
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
         window.open(url, '_blank');
     }
