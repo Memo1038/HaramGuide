@@ -18,17 +18,16 @@
 
         .container { padding: 15px; }
         .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: var(--green); border-right: 4px solid var(--gold); padding-right: 10px; font-size: 1.2em; margin-bottom: 15px; }
+        h2 { color: var(--green); border-right: 4px solid var(--gold); padding-right: 10px; font-size: 1.2em; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .place-btn { 
-            background: white; border: 1px solid #eee; padding: 15px 10px; border-radius: 10px; 
-            text-align: center; font-weight: bold; font-size: 0.85em; transition: 0.3s;
-            display: flex; flex-direction: column; align-items: center; gap: 5px; color: #333; text-decoration: none;
+            background: white; border: 1px solid #ddd; padding: 15px 10px; border-radius: 10px; 
+            text-align: center; font-weight: bold; font-size: 0.9em; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
         }
         .place-btn:active { background: #f0f0f0; transform: scale(0.95); }
         .icon { font-size: 1.5em; }
-        .desc { font-size: 0.75em; color: #666; font-weight: normal; }
 
         .go-btn { background: var(--green); color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; margin-top: 10px; }
     </style>
@@ -54,20 +53,6 @@
     </div>
 
     <div class="card">
-        <h2>♿ عربات كبار السن (المجانية)</h2>
-        <div class="grid">
-            <div class="place-btn" onclick="openGMap(21.4202, 39.8262)">
-                <span class="icon">🛒</span> نقطة أجياد
-                <span class="desc">توزيع العربات اليدوية</span>
-            </div>
-            <div class="place-btn" onclick="openGMap(21.4235, 39.8245)">
-                <span class="icon">⚡</span> جسر الشبيكة
-                <span class="desc">عربات كهربائية ويدوية</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="card">
         <h2>🚻 دورات المياه (المواضي)</h2>
         <div class="grid">
             <div class="place-btn" onclick="openGMap(21.4245, 39.8305)">
@@ -80,23 +65,13 @@
     </div>
 
     <div class="card">
-        <h2>🍴 مطاعم بجوار الحرم</h2>
+        <h2>🍴 المطاعم والخدمات</h2>
         <div class="grid">
             <div class="place-btn" onclick="openGMap(21.4210, 39.8200)">
                 <span class="icon">🍔</span> مطعم البيك
-                <span class="desc">الوجبات السريعة الأشهر</span>
             </div>
             <div class="place-btn" onclick="openGMap(21.4188, 39.8256)">
-                <span class="icon">🏢</span> مطاعم أبراج البيت
-                <span class="desc">تنوع عالمي (فود كورت)</span>
-            </div>
-            <div class="place-btn" onclick="openGMap(21.4215, 39.8205)">
-                <span class="icon">🥘</span> مطعم جبل عمر
-                <span class="desc">خيارات متنوعة فاخرة</span>
-            </div>
-            <div class="place-btn" onclick="openGMap(21.4180, 39.8250)">
-                <span class="icon">🍕</span> مجمع الصفوة
-                <span class="desc">مطاعم اقتصادية وسريعة</span>
+                <span class="icon">🏢</span> أبراج البيت
             </div>
         </div>
     </div>
@@ -104,6 +79,7 @@
 
 <script>
     function openGMap(lat, lng) {
+        // هذا الرابط يفتح تطبيق خرائط جوجل مباشرة على وضع "التوجيه" (Navigation)
         window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`, '_blank');
     }
 </script>
